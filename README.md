@@ -5,14 +5,14 @@
 ### Give it a try today
 To use as a docker action
 ```
-bx wsk action update myAction myAction.jar --docker openwhisk/java8action:1.0.0
+wsk action update myAction myAction.jar --docker openwhisk/java8action:1.0.0
 ```
 This works on any deployment of Apache OpenWhisk
 
 ### To use on deployment that contains the rutime as a kind
 To use as a kind action
 ```
-bx wsk action update myAction myAction.jar --kind java:8
+wsk action update myAction myAction.jar --kind java:8
 ```
 
 ### Local development
