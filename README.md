@@ -1,4 +1,5 @@
-#Apache OpenWhisk runtimes for java
+# Apache OpenWhisk runtimes for java
+
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-runtime-java.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-runtime-java)
 
 
@@ -49,6 +50,37 @@ ln -s ${ROOTDIR}/ansible/environments/local ${OPENWHISK_HOME}/ansible/environmen
 wskdev fresh -t local-java
 ```
 
+### Testing
+Install dependencies from the root directory on $OPENWHISK_HOME repository
+```
+./gradlew :common:scala:install :core:controller:install :core:invoker:install :tests:install
+```
+
+Using gradle for the ActionContainer tests you need to use a proxy if running on Mac, if Linux then don't use proxy options
+You can pass the flags `-Dhttp.proxyHost=localhost -Dhttp.proxyPort=3128` directly in gradle command.
+Or save in your `$HOME/.gradle/gradle.properties`
+```
+systemProp.http.proxyHost=localhost
+systemProp.http.proxyPort=3128
+```
+Using gradle to run all tests
+```
+./gradlew :tests:test
+```
+Using gradle to run some tests
+```
+./gradlew :tests:test --tests *ActionContainerTests*
+```
+Using IntelliJ:
+- Import project as gradle project.
+- Make sure working directory is root of the project/repo
+- Add the following Java VM properties in ScalaTests Run Configuration, easiest is to change the Defaults for all ScalaTests to use this VM properties
+```
+-Dhttp.proxyHost=localhost
+-Dhttp.proxyPort=3128
+```
+
+#### Using container image to test
 To use as docker action push to your own dockerhub account
 ```
 docker tag whisk/java8action $user_prefix/java8action
