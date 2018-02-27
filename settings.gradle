@@ -1,6 +1,7 @@
 include 'tests'
 
 include 'core:javaAction'
+include 'core:javaAction:proxy'
 
 rootProject.name = 'runtime-java'
 

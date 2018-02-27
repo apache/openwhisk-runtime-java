@@ -87,7 +87,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
         },
         env.take(1).toMap)
 
-    out.trim shouldBe empty
+    out.trim should fullyMatch regex """^exec -a 'javaAction-all.jar'(.*) -jar /deployments/javaAction-all.jar$"""
     err.trim shouldBe empty
   }
 
@@ -122,7 +122,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       out2 should be(Some(JsObject("greeting" -> JsString("Hello ksihW!"))))
     }
 
-    out.trim shouldBe empty
+    out.trim should fullyMatch regex """^exec -a 'javaAction-all.jar'(.*) -jar /deployments/javaAction-all.jar$"""
     err.trim shouldBe empty
   }
 
@@ -153,7 +153,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       out should be(Some(JsObject("greeting" -> JsString("Hello Whisk!"))))
     }
 
-    out.trim shouldBe empty
+    out.trim should fullyMatch regex """^exec -a 'javaAction-all.jar'(.*) -jar /deployments/javaAction-all.jar$"""
     err.trim shouldBe empty
   }
 
@@ -191,7 +191,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       }
     }
 
-    out.trim shouldBe empty
+    out.trim should fullyMatch regex """^exec -a 'javaAction-all.jar'(.*) -jar /deployments/javaAction-all.jar$"""
     err.trim should not be empty
   }
 
@@ -221,7 +221,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       runRes.get.fields.get("winter") shouldBe Some(JsString("❄ ☃ ❄"))
     }
 
-    out should include("❄ ☃ ❄")
+    out.trim should include("❄ ☃ ❄")
     err.trim shouldBe empty
   }
 
@@ -303,7 +303,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
     }
 
     val combined = out + err
-    combined.trim shouldBe empty
+    combined.trim should fullyMatch regex """^exec -a 'javaAction-all.jar'(.*) -jar /deployments/javaAction-all.jar$"""
   }
 
   it should "survive System.exit" in {
@@ -417,7 +417,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       runRes shouldBe defined
       runRes.get.fields.get("message") shouldBe Some(JsString("dynamic!"))
     }
-    (out ++ err).trim shouldBe empty
+    (out ++ err).trim should fullyMatch regex """^exec -a 'javaAction-all.jar'(.*) -jar /deployments/javaAction-all.jar$"""
   }
 
   it should "support loading classes from the current classloader" in {

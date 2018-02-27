@@ -31,5 +31,6 @@ TERM=dumb ./gradlew \
 # Build runtime
 cd $ROOTDIR
 TERM=dumb ./gradlew \
+oneJar \
 distDocker \
 -PdockerImagePrefix=${IMAGE_PREFIX}
