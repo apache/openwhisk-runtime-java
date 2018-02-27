@@ -1,0 +1,11 @@
+**/gradlew
+**/gradle
+**/build.gradle
+**/settings.gradle
+**/.gradle
+./proxy/build/delete-build-run.sh
+./proxy/bin
+./proxy/src
+./proxy/.sts4-cache
+./proxy/build/classes
+./proxy/build/tmp
