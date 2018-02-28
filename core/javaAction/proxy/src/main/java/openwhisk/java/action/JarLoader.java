@@ -18,7 +18,6 @@
 package openwhisk.java.action;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,15 +31,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
-import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 
 public class JarLoader extends URLClassLoader {
-    static final Logger LOGGER = Logger.getLogger(JarLoader.class.getName());
-
     private final Class<?> mainClass;
     private final Method mainMethod;
 
@@ -61,18 +55,9 @@ public class JarLoader extends URLClassLoader {
     public JarLoader(Path jarPath, String entrypoint)
             throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, SecurityException {
         super(new URL[] { jarPath.toUri().toURL() });
-        
+
         final String[] splittedEntrypoint = entrypoint.split("#");
-        String entrypointClassName = splittedEntrypoint[0];
-        if (entrypointClassName == null || entrypointClassName.trim().length() == 0) {
-            //read Manifest for main class 
-            try {
-                entrypointClassName = getMainClassFromManifest(jarPath.toFile());
-                LOGGER.fine("Using main class from Manifest :" + entrypointClassName);
-            } catch (IOException e) {
-                //TODO log , ideally its fatal
-            }
-        }
+        final String entrypointClassName = splittedEntrypoint[0];
         final String entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
 
         this.mainClass = loadClass(entrypointClassName);
@@ -80,18 +65,11 @@ public class JarLoader extends URLClassLoader {
         Method m = mainClass.getMethod(entrypointMethodName, new Class[] { JsonObject.class });
         m.setAccessible(true);
         int modifiers = m.getModifiers();
-        //TODO - need to fix this when we use Java standard signature for ActionClass
         if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
             throw new NoSuchMethodException("main");
         }
 
         this.mainMethod = m;
-    }
-
-    private String getMainClassFromManifest(File file) throws IOException {
-        JarFile jf = new JarFile(file);
-        Manifest mf  = jf.getManifest();
-        return mf.getMainAttributes().getValue("Main-Class");
     }
 
     public JsonObject invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
@@ -111,7 +89,6 @@ public class JarLoader extends URLClassLoader {
                     map.putAll(newEnv);
                 }
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
     }
 }
