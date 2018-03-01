@@ -35,4 +35,6 @@ RUN cd /javaAction; ./gradlew oneJar
 
 RUN rm -rf /javaAction/src
 
-CMD ["java", "-jar", "/javaAction/build/libs/javaAction-all.jar"]
+RUN java -Xshare:dump
+
+CMD ["java", "-Xshare:on", "-jar", "/javaAction/build/libs/javaAction-all.jar"]
