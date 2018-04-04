@@ -26,7 +26,3 @@ task oneJar(type: Jar) {
     }
     with jar
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.10'
-}
