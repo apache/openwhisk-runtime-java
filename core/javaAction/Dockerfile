@@ -1,38 +1,39 @@
-FROM buildpack-deps:trusty-curl
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.  The ASF licenses this file to you
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
+# at:
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations under the License.
+#
 
-ENV DEBIAN_FRONTEND noninteractive
+FROM adoptopenjdk/openjdk8-openj9:jdk8u162-b12_openj9-0.8.0
 
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
+	&& apt-get install -y --no-install-recommends locales \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& locale-gen en_US.UTF-8
 
-ENV VERSION 8
-ENV UPDATE 131
-ENV BUILD 11
-
-ENV JAVA_HOME /usr/lib/jvm/java-${VERSION}-oracle
-ENV JRE_HOME ${JAVA_HOME}/jre
-
-RUN curl --silent --location --retry 3 --cacert /etc/ssl/certs/GeoTrust_Global_CA.pem \
-  --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
-  http://download.oracle.com/otn-pub/java/jdk/"${VERSION}"u"${UPDATE}"-b"${BUILD}"/d54c1d3a095b4ff2b6607d096fa80163/server-jre-"${VERSION}"u"${UPDATE}"-linux-x64.tar.gz \
-  | tar xz -C /tmp && \
-  mkdir -p /usr/lib/jvm && mv /tmp/jdk1.${VERSION}.0_${UPDATE} "${JAVA_HOME}" && \
-  apt-get autoclean && apt-get --purge -y autoremove && \
-  rm -rf /tmp/* /var/tmp/*
-
-RUN update-alternatives --install "/usr/bin/java" "java" "${JRE_HOME}/bin/java" 1 && \
-  update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1 && \
-  update-alternatives --set java "${JRE_HOME}/bin/java" && \
-  update-alternatives --set javac "${JAVA_HOME}/bin/javac"
+ENV LANG="en_US.UTF-8" \
+	LANGUAGE="en_US:en" \
+	LC_ALL="en_US.UTF-8" \
+	VERSION=8 \
+	UPDATE=162 \
+	BUILD=12
 
 ADD proxy /javaAction
 
-RUN rm -rf /javaAction/.classpath /javaAction/.gitignore /javaAction/.gradle /javaAction/.project /javaAction/.settings /javaAction/Dockerfile /javaAction/build
+RUN cd /javaAction \
+	&& rm -rf .classpath .gitignore .gradle .project .settings Dockerfile build \
+	&& ./gradlew oneJar \
+	&& rm -rf /javaAction/src \
+	&& ./compileClassCache.sh
 
-RUN cd /javaAction; ./gradlew oneJar
-
-RUN rm -rf /javaAction/src
-
-CMD ["java", "-jar", "/javaAction/build/libs/javaAction-all.jar"]
+CMD ["java", "-Dfile.encoding=UTF-8", "-Xshareclasses:cacheDir=/javaSharedCache,readonly", "-Xquickstart", "-jar", "/javaAction/build/libs/javaAction-all.jar"]
