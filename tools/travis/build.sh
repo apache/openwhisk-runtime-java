@@ -23,15 +23,20 @@ set -ex
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 ROOTDIR="$SCRIPTDIR/../.."
 WHISKDIR="$ROOTDIR/../openwhisk"
+UTILDIR="$ROOTDIR/../incubator-openwhisk-utilities"
 
 export OPENWHISK_HOME=$WHISKDIR
 
 IMAGE_PREFIX="testing"
 
+# run scancode using the ASF Release configuration
+cd $UTILDIR
+scancode/scanCode.py --config scancode/ASF-Release.cfg $ROOTDIR
+
 # Build OpenWhisk
 cd $WHISKDIR
 
-#pull down images
+# pull down images
 docker pull openwhisk/controller
 docker tag openwhisk/controller ${IMAGE_PREFIX}/controller
 docker pull openwhisk/invoker
