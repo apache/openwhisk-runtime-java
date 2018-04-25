@@ -31,9 +31,9 @@ RUNTIME_VERSION=$2
 IMAGE_TAG=$3
 
 if [ ${RUNTIME_VERSION} == "8" ]; then
-  RUNTIME="javaAction"
-elif [ ${RUNTIME_VERSION} == "9" ]; then
-  RUNTIME="java9Action"
+  RUNTIME="java8"
+elif [ ${RUNTIME_VERSION} == "10" ]; then
+  RUNTIME="java10"
 fi
 
 if [[ ! -z ${DOCKER_USER} ]] && [[ ! -z ${DOCKER_PASSWORD} ]]; then
@@ -42,7 +42,7 @@ fi
 
 if [[ ! -z ${RUNTIME} ]]; then
 TERM=dumb ./gradlew \
-:core:${RUNTIME}:distDocker \
+:${RUNTIME}:distDocker \
 -PdockerRegistry=docker.io \
 -PdockerImagePrefix=${IMAGE_PREFIX} \
 -PdockerImageTag=${IMAGE_TAG}
