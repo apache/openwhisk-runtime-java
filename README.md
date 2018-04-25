@@ -76,7 +76,7 @@ e.q., `--main com.example.MyMain#methodName`
 ### Create the Java Action
 To use as a docker action:
 ```
-wsk action update helloJava hello.jar --main Hello openwhisk/java8action
+wsk action update helloJava hello.jar --main Hello --docker openwhisk/java8action
 ```
 This works on any deployment of Apache OpenWhisk
 
@@ -140,13 +140,6 @@ pushd $OPENWHISK_HOME
 podd $OPENWHISK_HOME
 ```
 
-Using gradle for the ActionContainer tests you need to use a proxy if running on Mac, if Linux then don't use proxy options
-You can pass the flags `-Dhttp.proxyHost=localhost -Dhttp.proxyPort=3128` directly in gradle command.
-Or save in your `$HOME/.gradle/gradle.properties`
-```
-systemProp.http.proxyHost=localhost
-systemProp.http.proxyPort=3128
-```
 Using gradle to run all tests
 ```
 ./gradlew :tests:test
@@ -158,11 +151,6 @@ Using gradle to run some tests
 Using IntelliJ:
 - Import project as gradle project.
 - Make sure working directory is root of the project/repo
-- Add the following Java VM properties in ScalaTests Run Configuration, easiest is to change the Defaults for all ScalaTests to use this VM properties
-```
--Dhttp.proxyHost=localhost
--Dhttp.proxyPort=3128
-```
 
 #### Using container image to test
 To use as docker action push to your own dockerhub account
@@ -172,7 +160,7 @@ docker push $user_prefix/java8action
 ```
 Then create the action using your the image from dockerhub
 ```
-wsk action update myAction myAction.jar --docker $user_prefix/java8action
+wsk action update helloJava hello.jar --main Hello --docker $user_prefix/java8action
 ```
 The `$user_prefix` is usually your dockerhub user id.
 
