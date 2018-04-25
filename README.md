@@ -58,10 +58,6 @@ jar cvf hello.jar Hello.class
 
 **Note:** [google-gson](https://github.com/google/gson) must exist in your Java CLASSPATH when compiling the Java file.
 
-When you use the command line and a `.jar` source file, you do not need to
-specify that you are creating a Java action;
-the tool determines that from the file extension.
-
 You need to specify the name of the main class using `--main`. An eligible main
 class is one that implements a static `main` method as described above. If the
 class is not in the default package, use the Java fully-qualified class name,
