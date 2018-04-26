@@ -18,16 +18,14 @@
 package actionContainers
 
 import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
-import org.scalatest.junit.JUnitRunner
+import common.WskActorSystem
 import spray.json.DefaultJsonProtocol._
 import spray.json._
-
-import ActionContainer.withContainer
-import ResourceHelpers.JarBuilder
-
-import common.WskActorSystem
+import actionContainers.ResourceHelpers.JarBuilder
+import actionContainers.ActionContainer.withContainer
 
 @RunWith(classOf[JUnitRunner])
 class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSystem with ActionProxyContainerTestUtils {

@@ -1,16 +1,16 @@
 <!--
 #
-# Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-# license agreements.  See the NOTICE file distributed with this work for additional 
+# Licensed to the Apache Software Foundation (ASF) under one or more contributor
+# license agreements.  See the NOTICE file distributed with this work for additional
 # information regarding copyright ownership.  The ASF licenses this file to you
-# under the Apache License, Version 2.0 (the # "License"); you may not use this 
-# file except in compliance with the License.  You may obtain a copy of the License 
+# under the Apache License, Version 2.0 (the # "License"); you may not use this
+# file except in compliance with the License.  You may obtain a copy of the License
 # at:
 #
 # http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software distributed 
-# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR 
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 # CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations under the License.
 #
@@ -20,30 +20,88 @@
 
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-runtime-java.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-runtime-java)
 
+## Changelogs
+- [Java 8 CHANGELOG.md](java8/CHANGELOG.md)
 
-### Give it a try today
-To use as a docker action
+
+## Quick Java Action
+A Java action is a Java program with a method called `main` that has the exact signature as follows:
+```java
+public static com.google.gson.JsonObject main(com.google.gson.JsonObject);
 ```
-wsk action update myAction myAction.jar --docker openwhisk/java8action:1.0.0
+
+For example, create a Java file called `Hello.java` with the following content:
+
+```java
+import com.google.gson.JsonObject;
+
+public class Hello {
+    public static JsonObject main(JsonObject args) {
+        String name = "stranger";
+        if (args.has("name"))
+            name = args.getAsJsonPrimitive("name").getAsString();
+        JsonObject response = new JsonObject();
+        response.addProperty("greeting", "Hello " + name + "!");
+        return response;
+    }
+}
+```
+In order to compile, test and archive Java files, you must have a [JDK 8](http://openjdk.java.net/install/) installed locally.
+
+Then, compile `Hello.java` into a JAR file `hello.jar` as follows:
+```
+javac Hello.java
+```
+```
+jar cvf hello.jar Hello.class
+```
+
+**Note:** [google-gson](https://github.com/google/gson) must exist in your Java CLASSPATH when compiling the Java file.
+
+You need to specify the name of the main class using `--main`. An eligible main
+class is one that implements a static `main` method as described above. If the
+class is not in the default package, use the Java fully-qualified class name,
+e.g., `--main com.example.MyMain`.
+
+If needed you can also customize the method name of your Java action. This
+can be done by specifying the Java fully-qualified method name of your action,
+e.q., `--main com.example.MyMain#methodName`
+
+### Create the Java Action
+To use as a docker action:
+```
+wsk action update helloJava hello.jar --main Hello --docker openwhisk/java8action
 ```
 This works on any deployment of Apache OpenWhisk
 
-### To use on deployment that contains the rutime as a kind
-To use as a kind action
+To use on a deployment of OpenWhisk that contains the runtime as a kind:
 ```
-wsk action update myAction myAction.jar --kind java:8
+wsk action update helloJava hello.jar --main Hello --kind java:8
 ```
 
-### Local development
+### Invoke the Java Action
+Action invocation is the same for Java actions as it is for Swift and JavaScript actions:
+
 ```
-./gradlew core:javaAction:distDocker
+wsk action invoke --result helloJava --param name World
+```
+
+```json
+  {
+      "greeting": "Hello World!"
+  }
+```
+
+## Local development
+```
+./gradlew java8:distDocker
 ```
 This will produce the image `whisk/java8action`
 
 Build and Push image
 ```
 docker login
-./gradlew core:javaAction:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io 
+./gradlew java8:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
 ```
 
 Deploy OpenWhisk using ansible environment that contains the kind `java:8`
@@ -71,16 +129,11 @@ wskdev fresh -t local-java
 ### Testing
 Install dependencies from the root directory on $OPENWHISK_HOME repository
 ```
-./gradlew :common:scala:install :core:controller:install :core:invoker:install :tests:install
+pushd $OPENWHISK_HOME
+./gradlew install
+podd $OPENWHISK_HOME
 ```
 
-Using gradle for the ActionContainer tests you need to use a proxy if running on Mac, if Linux then don't use proxy options
-You can pass the flags `-Dhttp.proxyHost=localhost -Dhttp.proxyPort=3128` directly in gradle command.
-Or save in your `$HOME/.gradle/gradle.properties`
-```
-systemProp.http.proxyHost=localhost
-systemProp.http.proxyPort=3128
-```
 Using gradle to run all tests
 ```
 ./gradlew :tests:test
@@ -92,11 +145,6 @@ Using gradle to run some tests
 Using IntelliJ:
 - Import project as gradle project.
 - Make sure working directory is root of the project/repo
-- Add the following Java VM properties in ScalaTests Run Configuration, easiest is to change the Defaults for all ScalaTests to use this VM properties
-```
--Dhttp.proxyHost=localhost
--Dhttp.proxyPort=3128
-```
 
 #### Using container image to test
 To use as docker action push to your own dockerhub account
@@ -106,7 +154,7 @@ docker push $user_prefix/java8action
 ```
 Then create the action using your the image from dockerhub
 ```
-wsk action update myAction myAction.jar --docker $user_prefix/java8action
+wsk action update helloJava hello.jar --main Hello --docker $user_prefix/java8action
 ```
 The `$user_prefix` is usually your dockerhub user id.
 

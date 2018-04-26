@@ -1,7 +1,8 @@
 include 'tests'
 
-include 'core:javaAction'
-include 'core:javaAction:proxy'
+include 'java8'
+include 'java8:proxy'
+
 
 rootProject.name = 'runtime-java'
 
@@ -10,7 +11,7 @@ gradle.ext.openwhisk = [
 ]
 
 gradle.ext.scala = [
-    version: '2.11.8',
+    version: '2.11.11',
     compileFlags: ['-feature', '-unchecked', '-deprecation', '-Xfatal-warnings', '-Ywarn-unused-import']
 ]
 
