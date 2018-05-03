@@ -200,3 +200,20 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+<<<<<<< HEAD
+=======
+
+
+========================================================================
+Apache License 2.0
+========================================================================
+
+This distribution has a binary dependency on the following components, which are available under an Apache License 2.0 (https://opensource.org/licenses/Apache-2.0).
+Google Gson 2.6.2 (gson - https://github.com/google/gson)
+  License included at licenses/LICENSE-gson.txt, or https://github.com/google/gson/blob/master/LICENSE
+  Copyright 2008 Google Inc.
+
+Docker Image for Eclipse OpenJ9 Version 8, jdk8u162-b12_openj9-0.8.0 (openjdk8-openj9:jdk8u162-b12_openj9-0.8.0 - https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/)
+  License included at licenses/LICENSE-openj9.txt, or https://github.com/eclipse/openj9/blob/master/LICENSE
+  Copyright (c) 2017, 2017 IBM Corp. and others
+>>>>>>> 958d81a... Change the license for java sdk to Eclipse openj9
