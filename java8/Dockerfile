@@ -15,11 +15,22 @@
 # limitations under the License.
 #
 
-FROM adoptopenjdk/openjdk8-openj9:jdk8u162-b12_openj9-0.8.0
+#FROM adoptopenjdk/openjdk8-openj9:jdk8u162-b12_openj9-0.8.0
+#FROM anapsix/alpine-java:8u172b11_jdk
+FROM openjdk:8u151-jdk-alpine
 
-RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
-	&& apt-get install -y --no-install-recommends locales \
-	&& rm -rf /var/lib/apt/lists/* \
+RUN rm -rf /var/lib/apt/lists/*
+
+#RUN apt-get clean && apt-get update \
+#	&& apt-get install -y --no-install-recommends locales \
+ENV GLIBC_REPO=https://github.com/sgerrand/alpine-pkg-glibc \
+    GLIBC_VERSION=2.27-r0
+RUN apk -U upgrade && \
+    apk add libstdc++ curl ca-certificates bash && \
+    for pkg in glibc-${GLIBC_VERSION} glibc-bin-${GLIBC_VERSION} glibc-i18n-${GLIBC_VERSION}; do curl -sSL ${GLIBC_REPO}/releases/download/${GLIBC_VERSION}/${pkg}.apk -o /tmp/${pkg}.apk; done && \
+    apk add --allow-untrusted /tmp/*.apk
+
+RUN rm -rf /var/lib/apt/lists/* \
 	&& locale-gen en_US.UTF-8
 
 ENV LANG="en_US.UTF-8" \
