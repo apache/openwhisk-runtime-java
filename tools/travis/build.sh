@@ -48,7 +48,8 @@ TERM=dumb ./gradlew \
 :common:scala:install \
 :core:controller:install \
 :core:invoker:install \
-:tests:install
+:tests:install \
+:tools:admin:install
 
 # Build runtime
 cd $ROOTDIR
