@@ -85,10 +85,8 @@ public class Proxy {
                 String base64Jar = message.getAsJsonPrimitive("code").getAsString();
 
                 // FIXME: this is obviously not very useful. The idea is that we
-                // will implement/use
-                // a streaming parser for the incoming JSON object so that we
-                // can stream the contents
-                // of the jar straight to a file.
+                // will implement/use a streaming parser for the incoming JSON object so that we
+                // can stream the contents of the jar straight to a file.
                 InputStream jarIs = new ByteArrayInputStream(base64Jar.getBytes(StandardCharsets.UTF_8));
 
                 // Save the bytes to a file.

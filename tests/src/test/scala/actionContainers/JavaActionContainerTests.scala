@@ -124,6 +124,34 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
     err.trim shouldBe empty
   }
 
+  it should "not allow initialization twice" in {
+    val (out, err) = withJavaContainer { c =>
+      val jar = JarBuilder.mkBase64Jar(
+        Seq("example", "HelloWhisk.java") ->
+          """
+            | package example;
+            |
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloWhisk {
+            |     public static JsonObject main(JsonObject args) {
+            |         return args;
+            |     }
+            | }
+          """.stripMargin.trim)
+
+      val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
+      initCode should be(200)
+
+      val (initCode2, out2) = c.init(initPayload("example.HelloWhisk", jar))
+      initCode2 should (be < 200 or be > 299) // the code does not matter, just cannot be 20x
+      out2 should be(Some(JsObject("error" -> JsString("Cannot initialize the action more than once."))))
+    }
+
+    out.trim shouldBe empty
+    err.trim shouldBe empty
+  }
+
   it should "support valid actions with non 'main' names" in {
     val (out, err) = withJavaContainer { c =>
       val jar = JarBuilder.mkBase64Jar(
