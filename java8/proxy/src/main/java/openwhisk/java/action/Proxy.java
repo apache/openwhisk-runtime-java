@@ -70,7 +70,9 @@ public class Proxy {
     private class InitHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             if (loader != null) {
-                Proxy.writeError(t, "Cannot initialize the action more than once.");
+                String errorMessage = "Cannot initialize the action more than once.";
+                System.err.println(errorMessage);
+                Proxy.writeError(t, errorMessage);
                 return;
             }
 

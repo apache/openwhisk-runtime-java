@@ -19,8 +19,6 @@ package actionContainers
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
 import common.WskActorSystem
 import spray.json.DefaultJsonProtocol._
 import spray.json._
@@ -28,11 +26,11 @@ import actionContainers.ResourceHelpers.JarBuilder
 import actionContainers.ActionContainer.withContainer
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSystem with ActionProxyContainerTestUtils {
+class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSystem {
 
   // Helpers specific to java actions
-  def withJavaContainer(code: ActionContainer => Unit, env: Map[String, String] = Map.empty) =
-    withContainer("java8action", env)(code)
+  override def withActionContainer(env: Map[String, String] = Map.empty)(
+    code: ActionContainer => Unit): (String, String) = withContainer("java8action", env)(code)
 
   override def initPayload(mainClass: String, jar64: String) =
     JsObject(
@@ -50,11 +48,10 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       "deadline" -> "123")
     val env = props.map { case (k, v) => s"__OW_${k.toUpperCase}" -> v }
     val (out, err) =
-      withJavaContainer(
-        { c =>
-          val jar = JarBuilder.mkBase64Jar(
-            Seq("example", "HelloWhisk.java") ->
-              """
+      withActionContainer(env.take(1).toMap) { c =>
+        val jar = JarBuilder.mkBase64Jar(
+          Seq("example", "HelloWhisk.java") ->
+            """
                 | package example;
                 |
                 | import com.google.gson.JsonObject;
@@ -73,24 +70,23 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
                 | }
               """.stripMargin.trim)
 
-          val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
-          initCode should be(200)
+        val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
+        initCode should be(200)
 
-          val (runCode, out) = c.run(runPayload(JsObject(), Some(props.toMap.toJson.asJsObject)))
-          runCode should be(200)
-          props.map {
-            case (k, v) => out.get.fields(k) shouldBe JsString(v)
+        val (runCode, out) = c.run(runPayload(JsObject(), Some(props.toMap.toJson.asJsObject)))
+        runCode should be(200)
+        props.map {
+          case (k, v) => out.get.fields(k) shouldBe JsString(v)
 
-          }
-        },
-        env.take(1).toMap)
+        }
+      }
 
     out.trim shouldBe empty
     err.trim shouldBe empty
   }
 
   it should "support valid flows" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -125,7 +121,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "not allow initialization twice" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -153,7 +149,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "support valid actions with non 'main' names" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -184,7 +180,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "report an error if explicit 'main' is not found" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -222,7 +218,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "handle unicode in source, input params, logs, and result" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -252,7 +248,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "fail to initialize with bad code" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       // This is valid zip file containing a single file, but not a valid
       // jar file.
       val brokenJar = ("UEsDBAoAAAAAAPxYbkhT4iFbCgAAAAoAAAANABwAbm90YWNsYXNzZmlsZVV" +
@@ -271,7 +267,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "return some error on action error" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -301,7 +297,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "support application errors" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "Error.java") ->
           """
@@ -333,7 +329,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "survive System.exit" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "Quitter.java") ->
           """
@@ -364,7 +360,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
   }
 
   it should "enforce that the user returns an object" in {
-    withJavaContainer { c =>
+    withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "Nuller.java") ->
           """
@@ -433,7 +429,7 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
         """.stripMargin.trim))
 
   def classLoaderTest(param: String) = {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val (initCode, _) = c.init(initPayload("example.EntryPoint", dynamicLoadingJar))
       initCode should be(200)
 
