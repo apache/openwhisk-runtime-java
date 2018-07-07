@@ -95,14 +95,14 @@ wsk action invoke --result helloJava --param name World
 
 ## Local development
 ```
-./gradlew java8:distDocker
+./gradlew core:java8:distDocker
 ```
 This will produce the image `whisk/java8action`
 
 Build and Push image
 ```
 docker login
-./gradlew java8:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
+./gradlew core:java8:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
 ```
 
 Deploy OpenWhisk using ansible environment that contains the kind `java:8`

@@ -17,9 +17,8 @@
 
 include 'tests'
 
-include 'java8'
-include 'java8:proxy'
-
+include 'core:java8'
+include 'core:java8:proxy'
 
 rootProject.name = 'runtime-java'
 
