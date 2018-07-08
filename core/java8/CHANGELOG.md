@@ -20,6 +20,11 @@
 # Java 8 OpenWhisk Runtime Container
 
 
+## 1.1.1
+Changes:
+- Adds log markers.
+- Improve error handling for improper initialization.
+
 ## 1.1.0
 Changes:
 - Replaced oracle [jdk8u131-b11](http://download.oracle.com/otn-pub/java/jdk/"${VERSION}"u"${UPDATE}"-b"${BUILD}"/d54c1d3a095b4ff2b6607d096fa80163/server-jre-"${VERSION}"u"${UPDATE}"-linux-x64.tar.gz) with OpenJDK [adoptopenjdk/openjdk8-openj9:jdk8u162-b12_openj9-0.8.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9)
