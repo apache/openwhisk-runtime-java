@@ -67,6 +67,13 @@ public class Proxy {
         writeResponse(t, 502, message.toString());
     }
 
+    private static void writeLogMarkers() {
+        System.out.println("XXX_THE_END_OF_A_WHISK_ACTIVATION_XXX");
+        System.err.println("XXX_THE_END_OF_A_WHISK_ACTIVATION_XXX");
+        System.out.flush();
+        System.err.flush();
+    }
+
     private class InitHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
             if (loader != null) {
@@ -82,26 +89,34 @@ public class Proxy {
                 JsonElement ie = parser.parse(new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8)));
                 JsonObject inputObject = ie.getAsJsonObject();
 
-                JsonObject message = inputObject.getAsJsonObject("value");
-                String mainClass = message.getAsJsonPrimitive("main").getAsString();
-                String base64Jar = message.getAsJsonPrimitive("code").getAsString();
+                if (inputObject.has("value")) {
+                    JsonObject message = inputObject.getAsJsonObject("value");
+                    if (message.has("main") && message.has("code")) {
+                        String mainClass = message.getAsJsonPrimitive("main").getAsString();
+                        String base64Jar = message.getAsJsonPrimitive("code").getAsString();
 
-                // FIXME: this is obviously not very useful. The idea is that we
-                // will implement/use a streaming parser for the incoming JSON object so that we
-                // can stream the contents of the jar straight to a file.
-                InputStream jarIs = new ByteArrayInputStream(base64Jar.getBytes(StandardCharsets.UTF_8));
+                        // FIXME: this is obviously not very useful. The idea is that we
+                        // will implement/use a streaming parser for the incoming JSON object so that we
+                        // can stream the contents of the jar straight to a file.
+                        InputStream jarIs = new ByteArrayInputStream(base64Jar.getBytes(StandardCharsets.UTF_8));
 
-                // Save the bytes to a file.
-                Path jarPath = JarLoader.saveBase64EncodedFile(jarIs);
+                        // Save the bytes to a file.
+                        Path jarPath = JarLoader.saveBase64EncodedFile(jarIs);
 
-                // Start up the custom classloader. This also checks that the
-                // main method exists.
-                loader = new JarLoader(jarPath, mainClass);
+                        // Start up the custom classloader. This also checks that the
+                        // main method exists.
+                        loader = new JarLoader(jarPath, mainClass);
 
-                Proxy.writeResponse(t, 200, "OK");
+                        Proxy.writeResponse(t, 200, "OK");
+                        return;
+                    }
+                }
+
+                Proxy.writeError(t, "Missing main/no code to execute.");
                 return;
             } catch (Exception e) {
                 e.printStackTrace(System.err);
+                writeLogMarkers();
                 Proxy.writeError(t, "An error has occurred (see logs for details): " + e);
                 return;
             }
@@ -139,7 +154,7 @@ public class Proxy {
                 JsonObject output = loader.invokeMain(inputObject, env);
                 // User code finished running here.
 
-                if(output == null) {
+                if (output == null) {
                     throw new NullPointerException("The action returned null");
                 }
 
@@ -156,6 +171,7 @@ public class Proxy {
                 e.printStackTrace(System.err);
                 Proxy.writeError(t, "An error has occurred (see logs for details): " + e);
             } finally {
+                writeLogMarkers();
                 System.setSecurityManager(sm);
                 Thread.currentThread().setContextClassLoader(cl);
             }
