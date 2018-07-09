@@ -42,7 +42,7 @@ fi
 
 if [[ ! -z ${RUNTIME} ]]; then
 TERM=dumb ./gradlew \
-:${RUNTIME}:distDocker \
+core:${RUNTIME}:distDocker \
 -PdockerRegistry=docker.io \
 -PdockerImagePrefix=${IMAGE_PREFIX} \
 -PdockerImageTag=${IMAGE_TAG}
