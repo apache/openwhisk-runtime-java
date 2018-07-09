@@ -19,8 +19,6 @@ package actionContainers
 
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
 import common.WskActorSystem
 import spray.json.DefaultJsonProtocol._
 import spray.json._
@@ -28,182 +26,123 @@ import actionContainers.ResourceHelpers.JarBuilder
 import actionContainers.ActionContainer.withContainer
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSystem with ActionProxyContainerTestUtils {
+class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSystem {
 
   // Helpers specific to java actions
-  def withJavaContainer(code: ActionContainer => Unit, env: Map[String, String] = Map.empty) =
-    withContainer("java8action", env)(code)
-
-  override def initPayload(mainClass: String, jar64: String) =
-    JsObject(
-      "value" -> JsObject("name" -> JsString("dummyAction"), "main" -> JsString(mainClass), "code" -> JsString(jar64)))
+  override def withActionContainer(env: Map[String, String] = Map.empty)(
+    code: ActionContainer => Unit): (String, String) = withContainer("java8action", env)(code)
 
   behavior of "Java action"
 
-  it should s"run a java snippet and confirm expected environment variables" in {
-    val props = Seq(
-      "api_host" -> "xyz",
-      "api_key" -> "abc",
-      "namespace" -> "zzz",
-      "action_name" -> "xxx",
-      "activation_id" -> "iii",
-      "deadline" -> "123")
-    val env = props.map { case (k, v) => s"__OW_${k.toUpperCase}" -> v }
-    val (out, err) =
-      withJavaContainer(
-        { c =>
-          val jar = JarBuilder.mkBase64Jar(
-            Seq("example", "HelloWhisk.java") ->
-              """
-                | package example;
-                |
-                | import com.google.gson.JsonObject;
-                |
-                | public class HelloWhisk {
-                |     public static JsonObject main(JsonObject args) {
-                |         JsonObject response = new JsonObject();
-                |         response.addProperty("api_host", System.getenv("__OW_API_HOST"));
-                |         response.addProperty("api_key", System.getenv("__OW_API_KEY"));
-                |         response.addProperty("namespace", System.getenv("__OW_NAMESPACE"));
-                |         response.addProperty("action_name", System.getenv("__OW_ACTION_NAME"));
-                |         response.addProperty("activation_id", System.getenv("__OW_ACTIVATION_ID"));
-                |         response.addProperty("deadline", System.getenv("__OW_DEADLINE"));
-                |         return response;
-                |     }
-                | }
-              """.stripMargin.trim)
-
-          val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
-          initCode should be(200)
-
-          val (runCode, out) = c.run(runPayload(JsObject(), Some(props.toMap.toJson.asJsObject)))
-          runCode should be(200)
-          props.map {
-            case (k, v) => out.get.fields(k) shouldBe JsString(v)
-
-          }
-        },
-        env.take(1).toMap)
-
-    out.trim shouldBe empty
-    err.trim shouldBe empty
+  override val testNoSourceOrExec = {
+    TestConfig("")
   }
 
-  it should "support valid flows" in {
-    val (out, err) = withJavaContainer { c =>
-      val jar = JarBuilder.mkBase64Jar(
-        Seq("example", "HelloWhisk.java") ->
-          """
-            | package example;
-            |
-            | import com.google.gson.JsonObject;
-            |
-            | public class HelloWhisk {
-            |     public static JsonObject main(JsonObject args) {
-            |         String name = args.getAsJsonPrimitive("name").getAsString();
-            |         JsonObject response = new JsonObject();
-            |         response.addProperty("greeting", "Hello " + name + "!");
-            |         return response;
-            |     }
-            | }
-          """.stripMargin.trim)
-
-      val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
-      initCode should be(200)
-
-      val (runCode1, out1) = c.run(runPayload(JsObject("name" -> JsString("Whisk"))))
-      runCode1 should be(200)
-      out1 should be(Some(JsObject("greeting" -> JsString("Hello Whisk!"))))
-
-      val (runCode2, out2) = c.run(runPayload(JsObject("name" -> JsString("ksihW"))))
-      runCode2 should be(200)
-      out2 should be(Some(JsObject("greeting" -> JsString("Hello ksihW!"))))
-    }
-
-    out.trim shouldBe empty
-    err.trim shouldBe empty
+  override val testNotReturningJson = {
+    // skip this test since and add own below (see Nuller)
+    TestConfig("", skipTest = true)
   }
 
-  it should "not allow initialization twice" in {
-    val (out, err) = withJavaContainer { c =>
-      val jar = JarBuilder.mkBase64Jar(
+  override val testEnv = {
+    TestConfig(
+      JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
-            | package example;
-            |
-            | import com.google.gson.JsonObject;
-            |
-            | public class HelloWhisk {
-            |     public static JsonObject main(JsonObject args) {
-            |         return args;
-            |     }
-            | }
-          """.stripMargin.trim)
-
-      val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
-      initCode should be(200)
-
-      val (initCode2, out2) = c.init(initPayload("example.HelloWhisk", jar))
-      initCode2 should (be < 200 or be > 299) // the code does not matter, just cannot be 20x
-      out2 should be(Some(JsObject("error" -> JsString("Cannot initialize the action more than once."))))
-    }
-
-    out.trim shouldBe empty
-    err.trim shouldBe empty
+          | package example;
+          |
+          | import com.google.gson.JsonObject;
+          |
+          | public class HelloWhisk {
+          |     public static JsonObject main(JsonObject args) {
+          |         JsonObject response = new JsonObject();
+          |         response.addProperty("api_host", System.getenv("__OW_API_HOST"));
+          |         response.addProperty("api_key", System.getenv("__OW_API_KEY"));
+          |         response.addProperty("namespace", System.getenv("__OW_NAMESPACE"));
+          |         response.addProperty("action_name", System.getenv("__OW_ACTION_NAME"));
+          |         response.addProperty("activation_id", System.getenv("__OW_ACTIVATION_ID"));
+          |         response.addProperty("deadline", System.getenv("__OW_DEADLINE"));
+          |         return response;
+          |     }
+          | }
+        """.stripMargin.trim),
+      main = "example.HelloWhisk")
   }
 
-  it should "support valid actions with non 'main' names" in {
-    val (out, err) = withJavaContainer { c =>
-      val jar = JarBuilder.mkBase64Jar(
+  override val testEcho = {
+    TestConfig(
+      JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
-            | package example;
-            |
-            | import com.google.gson.JsonObject;
-            |
-            | public class HelloWhisk {
-            |     public static JsonObject hello(JsonObject args) {
-            |         String name = args.getAsJsonPrimitive("name").getAsString();
-            |         JsonObject response = new JsonObject();
-            |         response.addProperty("greeting", "Hello " + name + "!");
-            |         return response;
-            |     }
-            | }
-          """.stripMargin.trim)
-
-      val (initCode, _) = c.init(initPayload("example.HelloWhisk#hello", jar))
-      initCode should be(200)
-
-      val (runCode, out) = c.run(runPayload(JsObject("name" -> JsString("Whisk"))))
-      runCode should be(200)
-      out should be(Some(JsObject("greeting" -> JsString("Hello Whisk!"))))
-    }
-
-    out.trim shouldBe empty
-    err.trim shouldBe empty
+          | package example;
+          |
+          | import com.google.gson.JsonObject;
+          |
+          | public class HelloWhisk {
+          |     public static JsonObject main(JsonObject args) {
+          |         System.out.println("hello stdout");
+          |         System.err.println("hello stderr");
+          |         return args;
+          |     }
+          | }
+        """.stripMargin.trim),
+      "example.HelloWhisk")
   }
 
-  it should "report an error if explicit 'main' is not found" in {
-    val (out, err) = withJavaContainer { c =>
-      val jar = JarBuilder.mkBase64Jar(
+  override val testUnicode = {
+    TestConfig(
+      JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
-            | package example;
-            |
-            | import com.google.gson.JsonObject;
-            |
-            | public class HelloWhisk {
-            |     public static JsonObject hello(JsonObject args) {
-            |         String name = args.getAsJsonPrimitive("name").getAsString();
-            |         JsonObject response = new JsonObject();
-            |         response.addProperty("greeting", "Hello " + name + "!");
-            |         return response;
-            |     }
-            | }
-          """.stripMargin.trim)
+          | package example;
+          |
+          | import com.google.gson.JsonObject;
+          |
+          | public class HelloWhisk {
+          |     public static JsonObject main(JsonObject args) {
+          |         String delimiter = args.getAsJsonPrimitive("delimiter").getAsString();
+          |         JsonObject response = new JsonObject();
+          |          String str = delimiter + " ☃ " + delimiter;
+          |          System.out.println(str);
+          |          response.addProperty("winter", str);
+          |          return response;
+          |     }
+          | }
+        """.stripMargin),
+      "example.HelloWhisk")
+  }
 
-      Seq("", "x", "!", "#", "#main", "#bogus").foreach { m =>
-        val (initCode, out) = c.init(initPayload(s"example.HelloWhisk$m", jar))
+  def echo(main: String = "main") = {
+    JarBuilder.mkBase64Jar(
+      Seq("example", "HelloWhisk.java") ->
+        s"""
+        | package example;
+        |
+        | import com.google.gson.JsonObject;
+        |
+        | public class HelloWhisk {
+        |     public static JsonObject $main(JsonObject args) {
+        |         return args;
+        |     }
+        | }
+      """.stripMargin.trim)
+  }
+
+  override val testInitCannotBeCalledMoreThanOnce = {
+    TestConfig(echo(), "example.HelloWhisk")
+  }
+
+  override val testEntryPointOtherThanMain = {
+    TestConfig(echo("naim"), "example.HelloWhisk#naim")
+  }
+
+  override val testLargeInput = {
+    TestConfig(echo(), "example.HelloWhisk")
+  }
+
+  Seq("", "x", "!", "#", "#main", "#bogus").foreach { m =>
+    it should s"report an error if explicit 'main' is not found ($m)" in {
+      val (out, err) = withActionContainer() { c =>
+        val (initCode, out) = c.init(initPayload(echo("hello"), s"example.HelloWhisk$m"))
         initCode shouldBe 502
 
         out shouldBe {
@@ -215,44 +154,17 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
           Some(JsObject("error" -> s"An error has occurred (see logs for details): $error".toJson))
         }
       }
+
+      checkStreams(out, err, {
+        case (o, e) =>
+          o shouldBe empty
+          e should not be empty
+      })
     }
-
-    out.trim shouldBe empty
-    err.trim should not be empty
-  }
-
-  it should "handle unicode in source, input params, logs, and result" in {
-    val (out, err) = withJavaContainer { c =>
-      val jar = JarBuilder.mkBase64Jar(
-        Seq("example", "HelloWhisk.java") ->
-          """
-            | package example;
-            |
-            | import com.google.gson.JsonObject;
-            |
-            | public class HelloWhisk {
-            |     public static JsonObject main(JsonObject args) {
-            |         String delimiter = args.getAsJsonPrimitive("delimiter").getAsString();
-            |         JsonObject response = new JsonObject();
-            |          String str = delimiter + " ☃ " + delimiter;
-            |          System.out.println(str);
-            |          response.addProperty("winter", str);
-            |          return response;
-            |     }
-            | }
-          """.stripMargin)
-
-      val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
-      val (runCode, runRes) = c.run(runPayload(JsObject("delimiter" -> JsString("❄"))))
-      runRes.get.fields.get("winter") shouldBe Some(JsString("❄ ☃ ❄"))
-    }
-
-    out should include("❄ ☃ ❄")
-    err.trim shouldBe empty
   }
 
   it should "fail to initialize with bad code" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       // This is valid zip file containing a single file, but not a valid
       // jar file.
       val brokenJar = ("UEsDBAoAAAAAAPxYbkhT4iFbCgAAAAoAAAANABwAbm90YWNsYXNzZmlsZVV" +
@@ -261,17 +173,19 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
         "GFzc2ZpbGVVVAUAA8zT5lZ1eAsAAQT1AQAABAAAAABQSwUGAAAAAAEAAQBT" +
         "AAAAUQAAAAAA")
 
-      val (initCode, _) = c.init(initPayload("example.Broken", brokenJar))
+      val (initCode, _) = c.init(initPayload(brokenJar, "example.Broken"))
       initCode should not be (200)
     }
 
     // Somewhere, the logs should contain an exception.
-    val combined = out + err
-    combined.toLowerCase should include("exception")
+    checkStreams(out, err, {
+      case (o, e) =>
+        (o + e).toLowerCase should include("exception")
+    })
   }
 
   it should "return some error on action error" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
@@ -286,22 +200,24 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
             | }
           """.stripMargin.trim)
 
-      val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
+      val (initCode, _) = c.init(initPayload(jar, "example.HelloWhisk"))
       initCode should be(200)
 
-      val (runCode, runRes) = c.run(runPayload(JsObject()))
+      val (runCode, runRes) = c.run(runPayload(JsObject.empty))
       runCode should not be (200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
     }
 
-    val combined = out + err
-    combined.toLowerCase should include("exception")
+    checkStreams(out, err, {
+      case (o, e) =>
+        (o + e).toLowerCase should include("exception")
+    })
   }
 
   it should "support application errors" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "Error.java") ->
           """
@@ -318,22 +234,55 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
             | }
           """.stripMargin.trim)
 
-      val (initCode, _) = c.init(initPayload("example.Error", jar))
+      val (initCode, _) = c.init(initPayload(jar, "example.Error"))
       initCode should be(200)
 
-      val (runCode, runRes) = c.run(runPayload(JsObject()))
+      val (runCode, runRes) = c.run(runPayload(JsObject.empty))
       runCode should be(200) // action writer returning an error is OK
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
     }
 
-    val combined = out + err
-    combined.trim shouldBe empty
+    checkStreams(out, err, {
+      case (o, e) =>
+        o shouldBe empty
+        e shouldBe empty
+    })
+  }
+
+  it should "support main in default package" in {
+    val (out, err) = withActionContainer() { c =>
+      val jar = JarBuilder.mkBase64Jar(
+        Seq("", "HelloWhisk.java") ->
+          """
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloWhisk {
+            |     public static JsonObject main(JsonObject args) throws Exception {
+            |         return args;
+            |     }
+            | }
+          """.stripMargin.trim)
+
+      val (initCode, _) = c.init(initPayload(jar, "HelloWhisk"))
+      initCode should be(200)
+
+      val args = JsObject("a" -> "A".toJson)
+      val (runCode, runRes) = c.run(runPayload(args))
+      runCode should be(200)
+      runRes shouldBe Some(args)
+    }
+
+    checkStreams(out, err, {
+      case (o, e) =>
+        o shouldBe empty
+        e shouldBe empty
+    })
   }
 
   it should "survive System.exit" in {
-    val (out, err) = withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "Quitter.java") ->
           """
@@ -349,22 +298,24 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
             | }
           """.stripMargin.trim)
 
-      val (initCode, _) = c.init(initPayload("example.Quitter", jar))
+      val (initCode, _) = c.init(initPayload(jar, "example.Quitter"))
       initCode should be(200)
 
-      val (runCode, runRes) = c.run(runPayload(JsObject()))
+      val (runCode, runRes) = c.run(runPayload(JsObject.empty))
       runCode should not be (200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
     }
 
-    val combined = out + err
-    combined.toLowerCase should include("system.exit")
+    checkStreams(out, err, {
+      case (o, e) =>
+        (o + e).toLowerCase should include("system.exit")
+    })
   }
 
   it should "enforce that the user returns an object" in {
-    withJavaContainer { c =>
+    val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("example", "Nuller.java") ->
           """
@@ -379,15 +330,20 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
             | }
           """.stripMargin.trim)
 
-      val (initCode, _) = c.init(initPayload("example.Nuller", jar))
+      val (initCode, _) = c.init(initPayload(jar, "example.Nuller"))
       initCode should be(200)
 
-      val (runCode, runRes) = c.run(runPayload(JsObject()))
+      val (runCode, runRes) = c.run(runPayload(JsObject.empty))
       runCode should not be (200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
     }
+
+    checkStreams(out, err, {
+      case (o, e) =>
+        (o + e).toLowerCase should include("the action returned null")
+    })
   }
 
   val dynamicLoadingJar = JarBuilder.mkBase64Jar(
@@ -433,8 +389,8 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
         """.stripMargin.trim))
 
   def classLoaderTest(param: String) = {
-    val (out, err) = withJavaContainer { c =>
-      val (initCode, _) = c.init(initPayload("example.EntryPoint", dynamicLoadingJar))
+    val (out, err) = withActionContainer() { c =>
+      val (initCode, _) = c.init(initPayload(dynamicLoadingJar, "example.EntryPoint"))
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject("classLoader" -> JsString(param))))
@@ -443,7 +399,12 @@ class JavaActionContainerTests extends FlatSpec with Matchers with WskActorSyste
       runRes shouldBe defined
       runRes.get.fields.get("message") shouldBe Some(JsString("dynamic!"))
     }
-    (out ++ err).trim shouldBe empty
+
+    checkStreams(out, err, {
+      case (o, e) =>
+        o shouldBe empty
+        e shouldBe empty
+    })
   }
 
   it should "support loading classes from the current classloader" in {
