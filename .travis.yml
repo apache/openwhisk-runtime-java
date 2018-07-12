@@ -29,7 +29,7 @@ deploy:
       all_branches: true
       repo: apache/incubator-openwhisk-runtime-java
   - provider: script
-    script: "./tools/travis/publish.sh openwhisk 8 master"
+    script: "./tools/travis/publish.sh openwhisk 8 latest"
     on:
       branch: master
       repo: apache/incubator-openwhisk-runtime-java
