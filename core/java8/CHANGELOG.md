@@ -20,6 +20,10 @@
 # Java 8 OpenWhisk Runtime Container
 
 
+## 1.1.2
+Changes:
+-  Update run handler to accept more environment variables [#67](https://github.com/apache/incubator-openwhisk-runtime-java/pull/67)
+
 ## 1.1.1
 Changes:
 - Adds log markers.
