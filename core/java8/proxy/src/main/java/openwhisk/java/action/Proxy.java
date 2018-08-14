@@ -28,6 +28,8 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -136,14 +138,15 @@ public class Proxy {
             try {
                 InputStream is = t.getRequestBody();
                 JsonParser parser = new JsonParser();
-                JsonElement ie = parser.parse(new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8)));
-                JsonObject inputObject = ie.getAsJsonObject().getAsJsonObject("value");
+                JsonObject body = parser.parse(new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))).getAsJsonObject();
+                JsonObject inputObject = body.getAsJsonObject("value");
 
                 HashMap<String, String> env = new HashMap<String, String>();
-                for (String p : new String[] { "api_key", "namespace", "action_name", "activation_id", "deadline" }) {
+                Set<Map.Entry<String, JsonElement>> entrySet = body.entrySet();
+                for(Map.Entry<String, JsonElement> entry : entrySet){
                     try {
-                        String val = ie.getAsJsonObject().getAsJsonPrimitive(p).getAsString();
-                        env.put(String.format("__OW_%s", p.toUpperCase()), val);
+                        if(!entry.getKey().equalsIgnoreCase("value"))
+                            env.put(String.format("__OW_%s", entry.getKey().toUpperCase()), entry.getValue().getAsString());
                     } catch (Exception e) {}
                 }
 
