@@ -19,6 +19,9 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.1.3
+Changes:
+- Bump up Eclipse OpenJ9 to the latest release [jdk8u181-b13_openj9-0.9.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/tags/) [#69](https://github.com/apache/incubator-openwhisk-runtime-java/pull/69)
 
 ## 1.1.2
 Changes:
