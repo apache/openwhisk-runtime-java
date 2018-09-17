@@ -17,10 +17,23 @@
 
 FROM adoptopenjdk/openjdk8-openj9:jdk8u162-b12_openj9-0.8.0
 
+ARG gradle_version=4.6
+
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
-	&& apt-get install -y --no-install-recommends locales \
+	&& apt-get install -y --no-install-recommends locales unzip \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& locale-gen en_US.UTF-8
+
+# Download and install Gradle
+RUN \
+    cd /usr/local && \
+    curl -L https://services.gradle.org/distributions/gradle-$gradle_version-bin.zip -o gradle-$gradle_version-bin.zip && \
+    unzip gradle-$gradle_version-bin.zip && \
+    rm gradle-$gradle_version-bin.zip
+
+# Export some environment variables
+ENV GRADLE_HOME=/usr/local/gradle-$gradle_version
+ENV PATH=$PATH:$GRADLE_HOME/bin
 
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
@@ -33,7 +46,7 @@ ADD proxy /javaAction
 
 RUN cd /javaAction \
 	&& rm -rf .classpath .gitignore .gradle .project .settings Dockerfile build \
-	&& ./gradlew oneJar \
+	&& gradle oneJar \
 	&& rm -rf /javaAction/src \
 	&& ./compileClassCache.sh
 
