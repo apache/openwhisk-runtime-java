@@ -27,7 +27,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes('Main-Class': 'openwhisk.java.action.Proxy')
+        attributes('Main-Class': 'org.apache.openwhisk.runtime.java.action.Proxy')
     }
 }
 

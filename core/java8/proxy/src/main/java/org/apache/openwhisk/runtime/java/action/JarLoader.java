@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package openwhisk.java.action;
+package org.apache.openwhisk.runtime.java.action;
 
 import java.io.File;
 import java.io.InputStream;
