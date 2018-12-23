@@ -38,4 +38,5 @@ RUN cd /javaAction \
 	&& ./compileClassCache.sh
 
 ADD init.sh ./
+RUN chmod 777 ./init.sh
 CMD ["./init.sh"]
