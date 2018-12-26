@@ -2,10 +2,12 @@
 # license agreements; and to You under the Apache License, Version 2.0.
 
 sudo: required
-group: deprecated-2017Q3
+dist: xenial
 language: scala
 scala:
 - 2.12.7
+jdk:
+- openjdk8
 services:
 - docker
 
