@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-FROM adoptopenjdk/openjdk8-openj9:jdk8u162-b12_openj9-0.8.0
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u181-b13_openj9-0.9.0
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
 	&& apt-get install -y --no-install-recommends locales \
