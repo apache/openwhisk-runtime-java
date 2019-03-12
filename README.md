@@ -77,7 +77,7 @@ This works on any deployment of Apache OpenWhisk
 
 To use on a deployment of OpenWhisk that contains the runtime as a kind:
 ```
-wsk action update helloJava hello.jar --main Hello --kind java:8
+wsk action update helloJava hello.jar --main Hello --kind java
 ```
 
 ### Invoke the Java Action
