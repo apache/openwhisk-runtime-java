@@ -22,7 +22,7 @@
 [![Build Status](https://travis-ci.org/apache/incubator-openwhisk-runtime-java.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-runtime-java)
 
 ## Changelogs
-- [Java 8 CHANGELOG.md](java8/CHANGELOG.md)
+- [Java 8 CHANGELOG.md](core/java8/CHANGELOG.md)
 
 
 ## Quick Java Action
