@@ -132,7 +132,7 @@ Install dependencies from the root directory on $OPENWHISK_HOME repository
 ```
 pushd $OPENWHISK_HOME
 ./gradlew install
-podd $OPENWHISK_HOME
+popd $OPENWHISK_HOME
 ```
 
 Using gradle to run all tests
