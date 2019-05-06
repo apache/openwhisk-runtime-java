@@ -38,10 +38,10 @@ COPY --from=builder /bin/proxy /bin/proxy
 
 ADD lib/src/Launcher.java /usr/java/src/Launcher.java
 ADD https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar /usr/java/lib/gson-2.8.5.jar
-RUN javac -cp  /usr/java/lib/gson-2.8.5.jar /usr/java/src/Launcher.java -d /usr/java/lib
-
+RUN cd /usr/java/src ;\
+    javac -cp /usr/java/lib/gson-2.8.5.jar Launcher.java ;\
+    jar cvf /usr/java/lib/launcher.jar *.class
 ADD bin/compile /bin/compile
 ENV OW_COMPILER=/bin/compile
 ENV OW_SAVE_JAR=exec.jar
 ENTRYPOINT /bin/proxy
-

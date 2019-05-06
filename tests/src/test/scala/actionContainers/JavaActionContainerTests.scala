@@ -28,9 +28,11 @@ import actionContainers.ActionContainer.withContainer
 @RunWith(classOf[JUnitRunner])
 class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSystem {
 
+  val image = "java8action"
+
   // Helpers specific to java actions
   override def withActionContainer(env: Map[String, String] = Map.empty)(
-    code: ActionContainer => Unit): (String, String) = withContainer("java8action", env)(code)
+    code: ActionContainer => Unit): (String, String) = withContainer(image, env)(code)
 
   behavior of "Java action"
 

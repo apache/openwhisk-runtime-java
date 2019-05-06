@@ -15,5 +15,15 @@
  * limitations under the License.
  */
 
-ext.dockerImageName = 'actionloop-java-v8'
-apply from: '../../gradle/docker.gradle'
+package actionContainers
+
+import common.WskActorSystem
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+
+@RunWith(classOf[JUnitRunner])
+class JavaActionLoopContainerTests extends JavaActionContainerTests with WskActorSystem  {
+
+  override val image = "actionloop-java-v8"
+
+}
