@@ -3,9 +3,9 @@ ACT=hello-java
 PREFIX=docker.io/openwhisk
 GSON=gson-2.8.5.jar
 
-main.jar: Hello.java Main.java | $(GSON)
+main.jar: Hello.java Main.java action/Hello.java action/Main.java | $(GSON)
 	javac -cp $(GSON) $?
-	jar cvf main.jar *.class
+	jar cvf main.jar *.class action/*.class
 
 $(GSON):
 	curl -LO "https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar"

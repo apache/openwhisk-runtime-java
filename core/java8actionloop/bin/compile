@@ -19,10 +19,8 @@
 """
 
 from __future__ import print_function
-import os
-import sys
-import codecs
-import subprocess
+from os.path import abspath, exists, dirname
+import os, sys, codecs, subprocess, shutil
 
 def copy(src, dst):
     with codecs.open(src, 'r', 'utf-8') as s:
@@ -36,6 +34,7 @@ def sources(launcher, source_dir, main):
     # source and dest
     src = "%s/exec" % source_dir
     main_java = "%s/%s.java" %  (source_dir, main)
+
     # copy exec to <main>.java is not there
     if os.path.isfile(src):
         copy(src,main_java)
@@ -74,8 +73,7 @@ def javac(sources, classpath, target_dir):
         sys.stderr.flush()
     return ok
 
-
-def build(files, target_dir, launcher):
+def build(source_dir, target_dir):
     lib = "/usr/java/lib/"
     classpath = ":".join([lib+x for x in os.listdir(lib)])
     if javac(files, classpath, target_dir):
@@ -83,18 +81,37 @@ def build(files, target_dir, launcher):
         with codecs.open(launcher, 'w', 'utf-8') as d: d.write(cmd)
         os.chmod(launcher, 0o755)
 
+def write_exec(target_dir, classpath, main):
+    launcher = "%s/exec" % target_dir
+    if main == "main":
+        main = ""
+    cmd = """#!/bin/bash
+cd %s
+/opt/java/openjdk/bin/java -cp %s Launcher %s""" %(
+        target_dir, ":".join(classpath), main
+    )
+    with codecs.open(launcher, 'w', 'utf-8') as d:
+        d.write(cmd)
+    os.chmod(launcher, 0o755)
+
 def assemble(argv):
     main = argv[1]
     source_dir = os.path.abspath(argv[2])
     target_dir = os.path.abspath(argv[3])
-    target_file = os.path.abspath("%s/exec" % target_dir)
-    launcher = os.path.abspath("/usr/java/src/exec__.java")
-    files = sources(launcher, source_dir, main)
-    if files:
-        build(files, target_dir, target_file)
+    classpath = ["/usr/java/lib", "/usr/java/lib/gson-2.8.5.jar"]    
+    exec_jar = "%s/exec.jar" % source_dir  
+    if exists(exec_jar):
+        shutil.rmtree(target_dir)
+        shutil.move(source_dir, target_dir)
+        classpath.append("%s/exec.jar" % target_dir)
+    #else:
+    #  build(source_dir, target_dir)
+ 
+    write_exec(target_dir, classpath, main)
+    
     sys.stdout.flush()
     sys.stderr.flush()
-
+    
 if __name__ == '__main__':
     if len(sys.argv) < 4:
         sys.stdout.write("usage: <main-class> <source-dir> <target-dir>\n")

@@ -8,6 +8,7 @@ import java.util.Map;
 import com.google.gson.*;
 
 class Launcher {
+
     private static String mainClassName = "Main";
     private static String mainMethodName = "main";
     private static Class mainClass = null;

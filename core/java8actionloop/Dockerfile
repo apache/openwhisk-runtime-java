@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM openwhisk/actionloop-v2:latest as builder
+FROM actionloop/actionloop-v2:latest as builder
 
 FROM adoptopenjdk/openjdk8:x86_64-ubuntu-jdk8u212-b03
 
@@ -42,5 +42,6 @@ RUN javac -cp  /usr/java/lib/gson-2.8.5.jar /usr/java/src/Launcher.java -d /usr/
 
 ADD bin/compile /bin/compile
 ENV OW_COMPILER=/bin/compile
+ENV OW_SAVE_JAR=exec.jar
 ENTRYPOINT /bin/proxy
 
