@@ -20,7 +20,7 @@
 
 from __future__ import print_function
 from os.path import abspath, exists, dirname
-import os, sys, codecs, subprocess, shutil
+import os, sys, codecs, subprocess, shutil, logging
 
 def copy(src, dst):
     with codecs.open(src, 'r', 'utf-8') as s:
@@ -28,12 +28,21 @@ def copy(src, dst):
         with codecs.open(dst, 'w', 'utf-8') as d:
             d.write(body)
 
+def find_with_ext(basedir, ext):
+    result = []
+    for root, _, files in os.walk(basedir, topdown=False):
+        for name in files:
+            if name.endswith(ext):
+                result.append(os.path.join(root,name))
+    return result
+
 def javac(sources, classpath, target_dir):
     cmd = [ "javac",
             "-cp", ":".join(classpath),
             "-d", target_dir
     ]+sources
-    print(cmd)
+    #print(cmd)
+    logging.info(" ".join(cmd))
     p = subprocess.Popen(cmd,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
@@ -53,57 +62,58 @@ def javac(sources, classpath, target_dir):
         sys.stderr.flush()
     return ok
 
-def build(source_dir, classpath, target_dir, main):
-    sources = []
-
-    # copy exec to source 
-    src = "%s/exec" % source_dir
-    mainFile = main.split(".")[-1].split("#")[0]
+def build(source_dir, classpath, target_dir, mainClass):
  
-    # copy exec to <main>.java is not there
+    # copy exec to <main>.java if it is there
+    src = "%s/exec" % source_dir
     if os.path.isfile(src):
-        main_java = "%s/%s.java" % (source_dir, mainFile)
+        main_java = "%s/%s.java" % (source_dir, mainClass.split(".")[-1])
         copy(src,main_java)
-        sources.append(main_java)
-        
-    return javac(sources, classpath, target_dir)
-  
+        logging.info("renamed exec to %s", main_java)
+
+    # look for sources and compile
+    sources = find_with_ext(source_dir, ".java")
+    if len(sources) > 0:
+        jars = find_with_ext(source_dir, ".jar")
+        logging.info("compiling  %d sources with %d jars", len(sources),len(jars))
+        return javac(sources, classpath+jars, source_dir)
+    
+    return True 
+
 def write_exec(target_dir, classpath, main):
     launcher = "%s/exec" % target_dir
-    if main == "main":
-        main = ""
+    jars = find_with_ext(target_dir, ".jar")
+    jars.append(target_dir)
     cmd = """#!/bin/bash
 cd %s
-/opt/java/openjdk/bin/java -cp %s Launcher %s""" %(
-        target_dir, ":".join(classpath), main
-    )
+/opt/java/openjdk/bin/java -cp %s Launcher "%s"
+""" %( target_dir, ":".join(classpath+jars), main)
     with codecs.open(launcher, 'w', 'utf-8') as d:
         d.write(cmd)
     os.chmod(launcher, 0o755)
 
-def assemble(argv):
+def parseMain(main):
+    if main == "main":
+        return "Main", "main"
+    a = main.split("#")
+    if(len(a)==1):
+        return a[0], "main"
+    return a[0], a[1]
 
-    main = argv[1]
+def assemble(argv):
+    mainClass, mainMethod = parseMain(argv[1])
+    logging.info("%s %s", mainClass, mainMethod)
     source_dir = os.path.abspath(argv[2])
     target_dir = os.path.abspath(argv[3])
-    classpath = ["/usr/java/lib/launcher.jar", "/usr/java/lib/gson-2.8.5.jar"]    
-    
-    ok = True
+    classpath = ["/usr/java/lib/launcher.jar", "/usr/java/lib/gson-2.8.5.jar"]
 
-    # handle the case of an exec uploaded
-    exec_jar = "%s/exec.jar" % source_dir  
-    if exists(exec_jar):
+    # build   
+    if build(source_dir, classpath, target_dir, mainClass):
         shutil.rmtree(target_dir)
         shutil.move(source_dir, target_dir)
-        classpath.append("%s/exec.jar" % target_dir)
-    else:
-      # build sources
-      ok = build(source_dir, classpath, target_dir, main)
-      print("build: ", ok)
-      classpath.append(target_dir)
- 
-    # write the launcher is it is there
-    if ok: write_exec(target_dir, classpath, main)
+        logging.info("moved %s to %s", source_dir, target_dir)
+        # write the launcher is it is there
+        write_exec(target_dir, classpath, "%s#%s" % (mainClass, mainMethod))
     
     sys.stdout.flush()
     sys.stderr.flush()
@@ -112,4 +122,5 @@ if __name__ == '__main__':
     if len(sys.argv) < 4:
         sys.stdout.write("usage: <main-class> <source-dir> <target-dir>\n")
         sys.exit(1)
+    logging.basicConfig(filename="/var/log/compile.log")
     assemble(sys.argv)

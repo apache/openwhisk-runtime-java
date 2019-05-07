@@ -18,7 +18,7 @@ start: build
 	docker run -p 8080:8080 -ti -v $(PWD):/proxy $(IMG)
 
 debug: build
-	docker run -p 8080:8080 -ti --entrypoint=/bin/sh -v $(PWD):/mnt -e OW_COMPILER=/mnt/bin/compile $(IMG)
+	docker run -p 8080:8080 -ti --entrypoint=/bin/bash -v $(PWD):/mnt -e OW_COMPILER=/mnt/bin/compile $(IMG)
 
 .PHONY: build push clean start debug
 
@@ -26,24 +26,30 @@ $(MAIN_JAR):
 	$(MAKE) $< -C ../../example main.jar
 
 ## You need to execute make start in another terminal 
-test-jar: $(MAIN_JAR)
-	$(INVOKE) init Hello#hello $(MAIN_JAR)
+
+test-source:
+	$(INVOKE) init ../../example/Main.java
 	$(INVOKE) run '{}'
 	$(INVOKE) run '{"name":"Mike"}'
 
-test-single:
-	$(INVOKE) init hello ../example/hello.py
+test-source-hello:
+	$(INVOKE) init action.Hello#hello ../../example/action/Hello.java
+	$(INVOKE) run '{}'
+	$(INVOKE) run '{"name":"Mike"}'
+
+test-jar: $(MAIN_JAR)
+	$(INVOKE) init action.Hello#hello $(MAIN_JAR)
 	$(INVOKE) run '{}'
 	$(INVOKE) run '{"name":"Mike"}'
 
 test-src-zip:
-	$(MAKE) -C ../example src.zip
-	$(INVOKE) init ../example/src.zip
+	$(MAKE) -C ../../example src.zip
+	$(INVOKE) init ../../example/src.zip
 	$(INVOKE) run '{}'
 	$(INVOKE) run '{"name":"Mike"}'
 
 test-bin-zip:
-	$(MAKE) -C ../example bin.zip
-	$(INVOKE) init ../example/bin.zip
+	$(MAKE) -C ../../example bin.zip
+	$(INVOKE) init ../../example/bin.zip
 	$(INVOKE) run '{}'
 	$(INVOKE) run '{"name":"Mike"}'

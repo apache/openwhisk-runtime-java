@@ -36,6 +36,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
 
   behavior of "Java action"
 
+
   override val testNoSourceOrExec = {
     TestConfig("")
   }
@@ -88,6 +89,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
           | }
         """.stripMargin.trim),
       "example.HelloWhisk")
+
   }
 
   override val testUnicode = {

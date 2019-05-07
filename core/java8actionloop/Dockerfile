@@ -36,8 +36,8 @@ RUN locale-gen en_US.UTF-8 ;\
 WORKDIR /javaAction
 COPY --from=builder /bin/proxy /bin/proxy
 
-ADD lib/src/Launcher.java /usr/java/src/Launcher.java
 ADD https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar /usr/java/lib/gson-2.8.5.jar
+ADD lib/src/Launcher.java /usr/java/src/Launcher.java
 RUN cd /usr/java/src ;\
     javac -cp /usr/java/lib/gson-2.8.5.jar Launcher.java ;\
     jar cvf /usr/java/lib/launcher.jar *.class
