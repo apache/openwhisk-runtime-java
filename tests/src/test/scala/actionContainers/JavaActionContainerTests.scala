@@ -24,11 +24,17 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import actionContainers.ResourceHelpers.JarBuilder
 import actionContainers.ActionContainer.withContainer
+import org.scalatest.Matchers
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSystem {
+class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSystem with Matchers {
 
   val image = "java8action"
+  val errPrefix = "\"An error has occurred (see logs for details):"
+  val checkStreamsAtInit = true
+  // this is true for the Java based runtime but not for actionloop
+  // since it does not parse the output and the invoker change the status anyway
+  val runtimeDetectErrors = true
 
   // Helpers specific to java actions
   override def withActionContainer(env: Map[String, String] = Map.empty)(
@@ -51,23 +57,23 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
-          | package example;
-          |
-          | import com.google.gson.JsonObject;
-          |
-          | public class HelloWhisk {
-          |     public static JsonObject main(JsonObject args) {
-          |         JsonObject response = new JsonObject();
-          |         response.addProperty("api_host", System.getenv("__OW_API_HOST"));
-          |         response.addProperty("api_key", System.getenv("__OW_API_KEY"));
-          |         response.addProperty("namespace", System.getenv("__OW_NAMESPACE"));
-          |         response.addProperty("action_name", System.getenv("__OW_ACTION_NAME"));
-          |         response.addProperty("activation_id", System.getenv("__OW_ACTIVATION_ID"));
-          |         response.addProperty("deadline", System.getenv("__OW_DEADLINE"));
-          |         return response;
-          |     }
-          | }
-        """.stripMargin.trim),
+            | package example;
+            |
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloWhisk {
+            |     public static JsonObject main(JsonObject args) {
+            |         JsonObject response = new JsonObject();
+            |         response.addProperty("api_host", System.getenv("__OW_API_HOST"));
+            |         response.addProperty("api_key", System.getenv("__OW_API_KEY"));
+            |         response.addProperty("namespace", System.getenv("__OW_NAMESPACE"));
+            |         response.addProperty("action_name", System.getenv("__OW_ACTION_NAME"));
+            |         response.addProperty("activation_id", System.getenv("__OW_ACTIVATION_ID"));
+            |         response.addProperty("deadline", System.getenv("__OW_DEADLINE"));
+            |         return response;
+            |     }
+            | }
+          """.stripMargin.trim),
       main = "example.HelloWhisk")
   }
 
@@ -76,18 +82,18 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
-          | package example;
-          |
-          | import com.google.gson.JsonObject;
-          |
-          | public class HelloWhisk {
-          |     public static JsonObject main(JsonObject args) {
-          |         System.out.println("hello stdout");
-          |         System.err.println("hello stderr");
-          |         return args;
-          |     }
-          | }
-        """.stripMargin.trim),
+            | package example;
+            |
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloWhisk {
+            |     public static JsonObject main(JsonObject args) {
+            |         System.out.println("hello stdout");
+            |         System.err.println("hello stderr");
+            |         return args;
+            |     }
+            | }
+          """.stripMargin.trim),
       "example.HelloWhisk")
 
   }
@@ -97,21 +103,21 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       JarBuilder.mkBase64Jar(
         Seq("example", "HelloWhisk.java") ->
           """
-          | package example;
-          |
-          | import com.google.gson.JsonObject;
-          |
-          | public class HelloWhisk {
-          |     public static JsonObject main(JsonObject args) {
-          |         String delimiter = args.getAsJsonPrimitive("delimiter").getAsString();
-          |         JsonObject response = new JsonObject();
-          |          String str = delimiter + " ☃ " + delimiter;
-          |          System.out.println(str);
-          |          response.addProperty("winter", str);
-          |          return response;
-          |     }
-          | }
-        """.stripMargin),
+            | package example;
+            |
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloWhisk {
+            |     public static JsonObject main(JsonObject args) {
+            |         String delimiter = args.getAsJsonPrimitive("delimiter").getAsString();
+            |         JsonObject response = new JsonObject();
+            |          String str = delimiter + " ☃ " + delimiter;
+            |          System.out.println(str);
+            |          response.addProperty("winter", str);
+            |          return response;
+            |     }
+            | }
+          """.stripMargin),
       "example.HelloWhisk")
   }
 
@@ -119,15 +125,15 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
     JarBuilder.mkBase64Jar(
       Seq("example", "HelloWhisk.java") ->
         s"""
-        | package example;
-        |
+           | package example;
+           |
         | import com.google.gson.JsonObject;
-        |
+           |
         | public class HelloWhisk {
-        |     public static JsonObject $main(JsonObject args) {
-        |         return args;
-        |     }
-        | }
+           |     public static JsonObject $main(JsonObject args) {
+           |         return args;
+           |     }
+           | }
       """.stripMargin.trim)
   }
 
@@ -149,21 +155,26 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
         val (initCode, out) = c.init(initPayload(echo("hello"), s"example.HelloWhisk$m"))
         initCode shouldBe 502
 
-        out shouldBe {
-          val error = m match {
-            case c if c == "x" || c == "!" => s"java.lang.ClassNotFoundException: example.HelloWhisk$c"
-            case "#bogus"                  => "java.lang.NoSuchMethodException: example.HelloWhisk.bogus(com.google.gson.JsonObject)"
-            case _                         => "java.lang.NoSuchMethodException: example.HelloWhisk.main(com.google.gson.JsonObject)"
-          }
-          Some(JsObject("error" -> s"An error has occurred (see logs for details): $error".toJson))
+        val expected = m match {
+          case c if c == "x" || c == "!" => s"$errPrefix java.lang.ClassNotFoundException: example.HelloWhisk$c"
+          case "#bogus" => s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.bogus(com.google.gson.JsonObject)"
+          case _ => s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.main(com.google.gson.JsonObject)"
         }
+
+        val error = out.get.fields.get("error").get.toString()
+
+        println(error)
+        println(expected)
+
+        error should startWith(expected)
       }
 
-      checkStreams(out, err, {
-        case (o, e) =>
-          o shouldBe empty
-          e should not be empty
-      })
+      if (checkStreamsAtInit)
+        checkStreams(out, err, {
+          case (o, e) =>
+            o shouldBe empty
+            e should not be empty
+        })
     }
   }
 
@@ -182,10 +193,11 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
     }
 
     // Somewhere, the logs should contain an exception.
-    checkStreams(out, err, {
-      case (o, e) =>
-        (o + e).toLowerCase should include("exception")
-    })
+    if(checkStreamsAtInit)
+      checkStreams(out, err, {
+        case (o, e) =>
+          (o + e).toLowerCase should include("exception")
+      })
   }
 
   it should "return some error on action error" in {
@@ -208,7 +220,10 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject.empty))
-      runCode should not be (200)
+      if(runtimeDetectErrors)
+        runCode should not be (200)
+      else
+        runCode should be (200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
@@ -306,7 +321,10 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject.empty))
-      runCode should not be (200)
+      if(runtimeDetectErrors)
+        runCode should not be (200)
+      else
+        runCode should be (200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
@@ -338,7 +356,10 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject.empty))
-      runCode should not be (200)
+      if(runtimeDetectErrors)
+        runCode should not be (200)
+      else
+        runCode should be (200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined

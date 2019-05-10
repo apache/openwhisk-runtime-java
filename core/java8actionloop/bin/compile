@@ -37,7 +37,8 @@ def find_with_ext(basedir, ext):
     return result
 
 def javac(sources, classpath, target_dir):
-    cmd = [ "javac",
+    cmd = [ "javac", 
+            "-encoding", "UTF-8",
             "-cp", ":".join(classpath),
             "-d", target_dir
     ]+sources
@@ -85,8 +86,8 @@ def write_exec(target_dir, classpath, main):
     jars = find_with_ext(target_dir, ".jar")
     jars.append(target_dir)
     cmd = """#!/bin/bash
-cd %s
-/opt/java/openjdk/bin/java -cp %s Launcher "%s"
+cd "%s"
+/opt/java/openjdk/bin/java -Dfile.encoding=UTF-8 -cp "%s" Launcher "%s" "$@"
 """ %( target_dir, ":".join(classpath+jars), main)
     with codecs.open(launcher, 'w', 'utf-8') as d:
         d.write(cmd)
@@ -114,6 +115,8 @@ def assemble(argv):
         logging.info("moved %s to %s", source_dir, target_dir)
         # write the launcher is it is there
         write_exec(target_dir, classpath, "%s#%s" % (mainClass, mainMethod))
+        # launch it to check it can load with immediate exit - it should not produce any output
+        subprocess.call(["%s/exec" % target_dir, "-exit"])
     
     sys.stdout.flush()
     sys.stderr.flush()
