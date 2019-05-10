@@ -8,7 +8,11 @@ scala:
 - 2.12.7
 services:
 - docker
-
+# required to support multi-stage build
+addons:
+   apt:
+     packages:
+       - docker-ce
 notifications:
   email: false
   webhooks:
