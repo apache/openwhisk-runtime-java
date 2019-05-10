@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSystem  {
+class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSystem {
 
   val image = "actionloop-java-v8"
 
@@ -44,7 +44,7 @@ class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSyst
 
   override val testEnv = {
     TestConfig(
-          """
+      """
           |package example;
           |
           |import com.google.gson.JsonObject;
@@ -67,7 +67,7 @@ class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSyst
 
   override val testEcho = {
     TestConfig(
-          """
+      """
           |package example;
           |
           |import com.google.gson.JsonObject;
@@ -86,7 +86,7 @@ class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSyst
 
   override val testUnicode = {
     TestConfig(
-        """
+      """
           |package example;
           |
           |import com.google.gson.JsonObject;
@@ -106,7 +106,7 @@ class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSyst
   }
 
   def echo(main: String = "main") = {
-        s"""
+    s"""
         |package example;
         |
         |import com.google.gson.JsonObject;

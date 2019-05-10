@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionLoopContainerTests extends JavaActionContainerTests with WskActorSystem  {
+class JavaActionLoopContainerTests extends JavaActionContainerTests with WskActorSystem {
   override val errPrefix = "\"Exception in thread \\\"main\\\""
   override val checkStreamsAtInit = false
   override val image = "actionloop-java-v8"

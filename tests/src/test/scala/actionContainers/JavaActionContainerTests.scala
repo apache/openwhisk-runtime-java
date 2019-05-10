@@ -42,7 +42,6 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
 
   behavior of "Java action"
 
-
   override val testNoSourceOrExec = {
     TestConfig("")
   }
@@ -157,7 +156,8 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
 
         val expected = m match {
           case c if c == "x" || c == "!" => s"$errPrefix java.lang.ClassNotFoundException: example.HelloWhisk$c"
-          case "#bogus" => s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.bogus(com.google.gson.JsonObject)"
+          case "#bogus" =>
+            s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.bogus(com.google.gson.JsonObject)"
           case _ => s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.main(com.google.gson.JsonObject)"
         }
 
@@ -193,7 +193,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
     }
 
     // Somewhere, the logs should contain an exception.
-    if(checkStreamsAtInit)
+    if (checkStreamsAtInit)
       checkStreams(out, err, {
         case (o, e) =>
           (o + e).toLowerCase should include("exception")
@@ -220,10 +220,10 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject.empty))
-      if(runtimeDetectErrors)
+      if (runtimeDetectErrors)
         runCode should not be (200)
       else
-        runCode should be (200)
+        runCode should be(200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
@@ -321,10 +321,10 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject.empty))
-      if(runtimeDetectErrors)
+      if (runtimeDetectErrors)
         runCode should not be (200)
       else
-        runCode should be (200)
+        runCode should be(200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
@@ -356,10 +356,10 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       initCode should be(200)
 
       val (runCode, runRes) = c.run(runPayload(JsObject.empty))
-      if(runtimeDetectErrors)
+      if (runtimeDetectErrors)
         runCode should not be (200)
       else
-        runCode should be (200)
+        runCode should be(200)
 
       runRes shouldBe defined
       runRes.get.fields.get("error") shouldBe defined
