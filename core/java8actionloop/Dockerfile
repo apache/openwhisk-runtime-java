@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-FROM actionloop/actionloop-v2:latest as builder
+FROM golang:1.12 as builder
+RUN go get github.com/apache/incubator-openwhisk-runtime-go/main
 
 FROM adoptopenjdk/openjdk8:x86_64-ubuntu-jdk8u212-b03
 
@@ -34,7 +35,7 @@ RUN locale-gen en_US.UTF-8 ;\
     mkdir -p /javaAction/action /usr/java/src /usr/java/lib
 
 WORKDIR /javaAction
-COPY --from=builder /bin/proxy /bin/proxy
+COPY --from=builder /go/bin/main /bin/proxy
 
 ADD https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar /usr/java/lib/gson-2.8.5.jar
 ADD lib/src/Launcher.java /usr/java/src/Launcher.java
