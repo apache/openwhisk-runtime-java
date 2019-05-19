@@ -34,6 +34,8 @@ if [ ${RUNTIME_VERSION} == "8" ]; then
   RUNTIME="java8"
 elif [ ${RUNTIME_VERSION} == "10" ]; then
   RUNTIME="java10"
+elif [ ${RUNTIME_VERSION} == "8a" ]; then
+  RUNTIME="java8actionloop"
 fi
 
 if [[ ! -z ${DOCKER_USER} ]] && [[ ! -z ${DOCKER_PASSWORD} ]]; then
