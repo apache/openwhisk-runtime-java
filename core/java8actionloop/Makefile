@@ -1,4 +1,4 @@
-IMG=actionloop-java-v8:latest
+IMG=actionloop-java-v8:nightly
 PREFIX=docker.io/openwhisk
 INVOKE=python ../../tools/invoke.py
 MAIN_JAR=../../example/main.jar

@@ -47,12 +47,12 @@ deploy:
       all_branches: true
       repo: apache/incubator-openwhisk-runtime-java
   - provider: script
-    script: "./tools/travis/publish.sh openwhisk 8 latest"
+    script: "./tools/travis/publish.sh openwhisk 8 nightly"
     on:
       branch: master
       repo: apache/incubator-openwhisk-runtime-java
   - provider: script
-    script: "./tools/travis/publish.sh openwhisk 8a latest"
+    script: "./tools/travis/publish.sh openwhisk 8a nightly"
     on:
       branch: master
       repo: apache/incubator-openwhisk-runtime-java
