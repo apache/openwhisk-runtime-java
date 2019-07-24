@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package openwhisk.java.action;
+package org.apache.openwhisk.runtime.java.action;
 
 import java.io.File;
 import java.io.InputStream;
@@ -68,7 +68,6 @@ public class JarLoader extends URLClassLoader {
         if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
             throw new NoSuchMethodException("main");
         }
-
         this.mainMethod = m;
     }
 

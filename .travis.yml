@@ -1,14 +1,32 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more contributor
-# license agreements; and to You under the Apache License, Version 2.0.
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
 sudo: required
 group: deprecated-2017Q3
 language: scala
 scala:
-- 2.11.11
+- 2.12.7
 services:
 - docker
-
+# required to support multi-stage build
+addons:
+   apt:
+     packages:
+       - docker-ce
 notifications:
   email: false
   webhooks:
@@ -29,7 +47,12 @@ deploy:
       all_branches: true
       repo: apache/incubator-openwhisk-runtime-java
   - provider: script
-    script: "./tools/travis/publish.sh openwhisk 8 latest"
+    script: "./tools/travis/publish.sh openwhisk 8 nightly"
+    on:
+      branch: master
+      repo: apache/incubator-openwhisk-runtime-java
+  - provider: script
+    script: "./tools/travis/publish.sh openwhisk 8a nightly"
     on:
       branch: master
       repo: apache/incubator-openwhisk-runtime-java

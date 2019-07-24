@@ -14,40 +14,35 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+FROM golang:1.12 as builder
+RUN env CGO_ENABLED=0 go get github.com/apache/incubator-openwhisk-runtime-go/main
 
-FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u181-b13_openj9-0.9.0
-
-ARG gradle_version=4.6
+FROM adoptopenjdk/openjdk8:x86_64-ubuntu-jdk8u212-b03
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
-	&& apt-get install -y --no-install-recommends locales unzip \
+	&& apt-get install -y --no-install-recommends locales python vim \
 	&& rm -rf /var/lib/apt/lists/* \
 	&& locale-gen en_US.UTF-8
-
-# Download and install Gradle
-RUN \
-    cd /usr/local && \
-    curl -L https://services.gradle.org/distributions/gradle-$gradle_version-bin.zip -o gradle-$gradle_version-bin.zip && \
-    unzip gradle-$gradle_version-bin.zip && \
-    rm gradle-$gradle_version-bin.zip
-
-# Export some environment variables
-ENV GRADLE_HOME=/usr/local/gradle-$gradle_version
-ENV PATH=$PATH:$GRADLE_HOME/bin
 
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
 	LC_ALL="en_US.UTF-8" \
 	VERSION=8 \
-	UPDATE=162 \
-	BUILD=12
+	UPDATE=212 \
+	BUILD=3
 
-ADD proxy /javaAction
+RUN locale-gen en_US.UTF-8 ;\
+    mkdir -p /javaAction/action /usr/java/src /usr/java/lib
 
-RUN cd /javaAction \
-	&& rm -rf .classpath .gitignore .gradle .project .settings Dockerfile build \
-	&& gradle oneJar \
-	&& rm -rf /javaAction/src \
-	&& ./compileClassCache.sh
+WORKDIR /javaAction
+COPY --from=builder /go/bin/main /bin/proxy
 
-CMD ["java", "-Dfile.encoding=UTF-8", "-Xshareclasses:cacheDir=/javaSharedCache,readonly", "-Xquickstart", "-jar", "/javaAction/build/libs/javaAction-all.jar"]
+ADD https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar /usr/java/lib/gson-2.8.5.jar
+ADD lib/src/Launcher.java /usr/java/src/Launcher.java
+RUN cd /usr/java/src ;\
+    javac -cp /usr/java/lib/gson-2.8.5.jar Launcher.java ;\
+    jar cvf /usr/java/lib/launcher.jar *.class
+ADD bin/compile /bin/compile
+ENV OW_COMPILER=/bin/compile
+ENV OW_SAVE_JAR=exec.jar
+ENTRYPOINT /bin/proxy
