@@ -106,7 +106,7 @@ docker login
 ```
 
 Deploy OpenWhisk using ansible environment that contains the kind `java:8`
-Assuming you have OpenWhisk already deploy localy and `OPENWHISK_HOME` pointing to root directory of OpenWhisk core repository.
+Assuming you have OpenWhisk already deploy locally and `OPENWHISK_HOME` pointing to root directory of OpenWhisk core repository.
 
 Set `ROOTDIR` to the root directory of this repository.
 
@@ -163,7 +163,3 @@ The `$user_prefix` is usually your dockerhub user id.
 
 # License
 [Apache 2.0](LICENSE.txt)
-
-# Disclaimer
-
-Apache OpenWhisk Runtime Java is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
