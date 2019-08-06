@@ -17,7 +17,7 @@
 FROM golang:1.12 as builder
 RUN env CGO_ENABLED=0 go get github.com/apache/incubator-openwhisk-runtime-go/main
 
-FROM adoptopenjdk/openjdk8:x86_64-ubuntu-jdk8u212-b03
+FROM adoptopenjdk/openjdk8:x86_64-ubuntu-jdk8u212-b04
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
 	&& apt-get install -y --no-install-recommends locales python vim \
