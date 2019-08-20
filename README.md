@@ -96,7 +96,7 @@ wsk action invoke --result helloJava --param name World
 ## Local development
 
 ### Pre-requisites
-- Gradle 
+- Gradle
 - Docker Desktop (local builds)
 
 ### Build  and Push image to a local Docker registry
@@ -180,6 +180,8 @@ wsk action update helloJava hello.jar --main Hello --docker $user_prefix/java8ac
 ```
 The `$user_prefix` is usually your dockerhub user id.
 
+---
+
 # Troubleshooting
 
 ### Gradle build fails with "Too many files open"
@@ -204,7 +206,7 @@ $ ulimit -a
 open files                      (-n) 10000
 ```
 
-### Gradle Task fails on  `:core:java8:tagImage` 
+### Gradle Task fails on  `:core:java8:tagImage`
 
 Docker daemon is not started and the Task is not able to push the image to your local registry.
 
