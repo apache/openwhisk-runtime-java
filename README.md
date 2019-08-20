@@ -19,7 +19,7 @@
 
 # Apache OpenWhisk runtimes for java
 
-[![Build Status](https://travis-ci.org/apache/incubator-openwhisk-runtime-java.svg?branch=master)](https://travis-ci.org/apache/incubator-openwhisk-runtime-java)
+[![Build Status](https://travis-ci.org/apache/openwhisk-runtime-java.svg?branch=master)](https://travis-ci.org/apache/openwhisk-runtime-java)
 
 ## Changelogs
 - [Java 8 CHANGELOG.md](core/java8/CHANGELOG.md)
@@ -94,19 +94,40 @@ wsk action invoke --result helloJava --param name World
 ```
 
 ## Local development
+
+### Pre-requisites
+- Gradle
+- Docker Desktop (local builds)
+
+### Build  and Push image to a local Docker registry
+
+1. Start Docker Desktop (i.e., Docker daemon)
+
+2. Build the Docker runtime image locally using Gradle:
 ```
 ./gradlew core:java8:distDocker
 ```
-This will produce the image `whisk/java8action`
+This will produce the image `whisk/java8action` and push it to the local Docker Desktop registry with the `latest` tag.
 
-Build and Push image
+3. Verify the image was registered:
+```
+$ docker images whisk/*
+REPOSITORY           TAG     IMAGE ID            CREATED             SIZE
+whisk/java8action    latest  35f90453905a        7 minutes ago       521MB
+```
+
+### Build and Push image to a remote Docker registry
+
+Build the Docker runtime image locally using Gradle supplying the image Prefix and Registry domain (default port):
 ```
 docker login
 ./gradlew core:java8:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
 ```
 
+## Deploying the Java runtime image to OpenWhisk
+
 Deploy OpenWhisk using ansible environment that contains the kind `java:8`
-Assuming you have OpenWhisk already deploy locally and `OPENWHISK_HOME` pointing to root directory of OpenWhisk core repository.
+Assuming you have OpenWhisk already deployed locally and `OPENWHISK_HOME` pointing to root directory of OpenWhisk core repository.
 
 Set `ROOTDIR` to the root directory of this repository.
 
@@ -159,7 +180,35 @@ wsk action update helloJava hello.jar --main Hello --docker $user_prefix/java8ac
 ```
 The `$user_prefix` is usually your dockerhub user id.
 
+---
 
+# Troubleshooting
+
+### Gradle build fails with "Too many files open"
+
+This may occur on MacOS as the default maximum # of file handles per session is `256`.  The gradle build requires many more and is unable to open more files (e.g., `java.io.FileNotFoundException`).  For example, you may see something like:
+
+```
+> java.io.FileNotFoundException: /Users/XXX/.gradle/caches/4.6/scripts-remapped/build_4mpzm2wl8gipqoxzlms7n6ctq/7gdodk7z6t5iivcgfvflmhqsm/cp_projdf5583fde4f7f1f2f3f5ea117e2cdff1/cache.properties (Too many open files)
+
+```
+You can see this limit by issuing:
+```
+$ ulimit -a
+open files                      (-n) 256
+```
+
+In order to increase the limit, open a new terminal session and issue the command (and verify):
+```
+$ ulimit -n 10000
+
+$ ulimit -a
+open files                      (-n) 10000
+```
+
+### Gradle Task fails on  `:core:java8:tagImage`
+
+Docker daemon is not started and the Task is not able to push the image to your local registry.
 
 # License
 [Apache 2.0](LICENSE.txt)
