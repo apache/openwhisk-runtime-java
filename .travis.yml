@@ -45,17 +45,17 @@ deploy:
     on:
       tags: true
       all_branches: true
-      repo: apache/incubator-openwhisk-runtime-java
+      repo: apache/openwhisk-runtime-java
   - provider: script
     script: "./tools/travis/publish.sh openwhisk 8 nightly"
     on:
       branch: master
-      repo: apache/incubator-openwhisk-runtime-java
+      repo: apache/openwhisk-runtime-java
   - provider: script
     script: "./tools/travis/publish.sh openwhisk 8a nightly"
     on:
       branch: master
-      repo: apache/incubator-openwhisk-runtime-java
+      repo: apache/openwhisk-runtime-java
 env:
   global:
   - secure: D4kU9O6bs63Myb4jaEgw1O2Kuy6aTAUKEX1qZ0eYMDouLnPOPnZaFWmpISKTrJyz7hJH7yY8Cj7xl5qwsLB6JZZMtqT6yj5J/jkUJjyLKdQH81PrYy22rH99xS2t5A1dsC0A/Bf39R/qNc5tx1wCMVDF4O2rFsUtn+8vE+rn0nXsiPeWhhZagk/Hrq8YbwzDJHOGHfWe1nZIcU8MORzTriX7J2VAF0AcirPandMxff4FgzNLk432DN2GvgZIlNtZGT1DWLtJV/Sp3unD9abXr5xqNDIW+fHrMq8j/JdHC6+PFtZRFrl0Vr6X8c61PkB/ELGF2MyzNgBTnEaJixl1pianr91WK4y0oLUwpSJCz4yoQGVimAAtqMgNXjEyFMcpLClzS5TjMXKaUfi9mBn9GMCwLi3VAuVtMtH2IRW03PxIPyxkbj1j8Nrd0jh408MuMpuzyECgb+E5ffbd+0YD5XUNlTkYLFi4sEh2xpzvjGrNbrTe99zFrHt3e+dbmoahmaCyDRsxD2CDI8b++HyN78z/jO9A7kFc2TAZbWa6Xygkj1nEpnR1y4TB6eqdDo7Y6W20dLjeSSF8rACw3bM3lJh+K4/nv4Nlo6pfblhvs7T53ftst+tHpxJoQy/gDC0TcuyBThrHTeI1j7k4HkQyN+NqezBdFN2ElufjQ74ds2c=
