@@ -19,6 +19,11 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.1.4
+Changes:
+- Update jdk adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u212-b04_openj9-0.14.2 [jdk8u181-b13_openj9-0.9.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/tags/)
+  Starting with [openj9-0.11.0}(https://github.com/eclipse/openj9/blob/b44844b02466ddf195eb9d8d6587ed89374a5f2a/doc/release-notes/0.11/0.11.md) container awareness is activated by default. This means, when the VM is running in a container, and a memory limit is set, the VM allocates more memory to the Java heap. Depending on the size of the memory limit.
+
 ## 1.1.3
 Changes:
 - Update jdk x86_64-ubuntu-jdk8u181-b13_openj9-0.9.0 and push latest hash [jdk8u181-b13_openj9-0.9.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/tags/) [#77](https://github.com/apache/openwhisk-runtime-java/pull/77/files)
