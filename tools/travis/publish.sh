@@ -34,6 +34,8 @@ if [ ${RUNTIME_VERSION} == "8" ]; then
   RUNTIME="java8"
 elif [ ${RUNTIME_VERSION} == "10" ]; then
   RUNTIME="java10"
+elif [ ${RUNTIME_VERSION} == "8a" ]; then
+  RUNTIME="java8actionloop"
 fi
 
 if [[ ! -z ${DOCKER_USER} ]] && [[ ! -z ${DOCKER_PASSWORD} ]]; then
@@ -46,4 +48,15 @@ core:${RUNTIME}:distDocker \
 -PdockerRegistry=docker.io \
 -PdockerImagePrefix=${IMAGE_PREFIX} \
 -PdockerImageTag=${IMAGE_TAG}
+
+  # if doing nightly also push a tag with the hash commit
+  if [ ${IMAGE_TAG} == "nightly" ]; then
+  SHORT_COMMIT=`git rev-parse --short HEAD`
+  TERM=dumb ./gradlew \
+  core:${RUNTIME}:distDocker \
+  -PdockerRegistry=docker.io \
+  -PdockerImagePrefix=${IMAGE_PREFIX} \
+  -PdockerImageTag=${SHORT_COMMIT}
+  fi
+
 fi

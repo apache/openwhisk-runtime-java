@@ -68,7 +68,6 @@ public class JarLoader extends URLClassLoader {
         if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
             throw new NoSuchMethodException("main");
         }
-
         this.mainMethod = m;
     }
 
