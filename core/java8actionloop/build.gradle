@@ -15,5 +15,5 @@
  * limitations under the License.
  */
 
-ext.dockerImageName = 'actionloop-java-v8'
+ext.dockerImageName = 'actionloop-java-v8:nightly'
 apply from: '../../gradle/docker.gradle'
