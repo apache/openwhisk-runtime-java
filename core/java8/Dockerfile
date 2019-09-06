@@ -27,8 +27,8 @@ ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
 	LC_ALL="en_US.UTF-8" \
 	VERSION=8 \
-	UPDATE=162 \
-	BUILD=12
+	UPDATE=222 \
+	BUILD=10
 
 ADD proxy /javaAction
 
