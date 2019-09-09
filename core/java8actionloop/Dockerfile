@@ -17,7 +17,8 @@
 FROM golang:1.12 as builder
 RUN env CGO_ENABLED=0 go get github.com/apache/openwhisk-runtime-go/main
 
-FROM adoptopenjdk/openjdk8:x86_64-ubuntu-jdk8u212-b04
+# Use AdoptOpen JDK8, OpenJ9 release version 0.15.1
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
 	&& apt-get install -y --no-install-recommends locales python vim \
@@ -28,8 +29,8 @@ ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
 	LC_ALL="en_US.UTF-8" \
 	VERSION=8 \
-	UPDATE=212 \
-	BUILD=3
+	UPDATE=222 \
+	BUILD=10
 
 RUN locale-gen en_US.UTF-8 ;\
     mkdir -p /javaAction/action /usr/java/src /usr/java/lib
