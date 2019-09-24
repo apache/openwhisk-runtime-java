@@ -12,7 +12,7 @@ results
 
 # Java artifacts
 *.class
-*.jar
+#*.jar
 *.zip
 
 # Environments
