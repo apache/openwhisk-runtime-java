@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-set +x
+set -x
 
 for f in *; do
     # if the file is a directory
@@ -33,7 +33,6 @@ for f in *; do
             Linux*)   B64_WRAP="-w0";;
             Darwin*)  B64_WRAP="";;
         esac
-        #base64 -w0 hello.jar > hello.jar.base64
         base64 $B64_WRAP hello.jar > hello.jar.base64
         cd ..
     fi
