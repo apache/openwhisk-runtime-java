@@ -61,15 +61,15 @@ public class Proxy {
 
     private void checkMultipleInitEnabled() {
         String strMultipleInit = System.getenv("OW_ALLOW_MULTIPLE_INIT");
-        System.out.printf("OW_ALLOW_MULTIPLE_INIT=%s\n", strMultipleInit);
+        // System.out.printf("OW_ALLOW_MULTIPLE_INIT=%s\n", strMultipleInit);
 
         // Determine if we allow multiple "init" calls (i.e., Java container reuse); default:false
         if(strMultipleInit!=null)
             this.allowMultipleInits = Boolean.parseBoolean(strMultipleInit);
 
-        if(this.allowMultipleInits){
-            System.out.println("Multiple '/init' allowed.");
-        }
+        // if(this.allowMultipleInits){
+        //     System.out.println("Multiple '/init' allowed.");
+        // }
     }
 
     public void start() {
