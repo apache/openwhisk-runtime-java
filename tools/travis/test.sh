@@ -26,5 +26,5 @@ WHISKDIR="$ROOTDIR/../openwhisk"
 
 export OPENWHISK_HOME=$WHISKDIR
 cd ${ROOTDIR}
-TERM=dumb ./gradlew :tests:checkScalafmtAll
+#TERM=dumb ./gradlew :tests:checkScalafmtAll
 #TERM=dumb ./gradlew :tests:test
