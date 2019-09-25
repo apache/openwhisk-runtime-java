@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-//include 'tests'
+include 'tests'
 
 include 'core:java8'
-//include 'core:java8:proxy'
-//include 'core:java8actionloop'
+include 'core:java8:proxy'
+include 'core:java8actionloop'
 
 rootProject.name = 'runtime-java'
 
