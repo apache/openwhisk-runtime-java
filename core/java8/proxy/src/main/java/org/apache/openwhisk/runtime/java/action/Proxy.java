@@ -45,8 +45,8 @@ public class Proxy {
     private boolean allowMultipleInits = false;
 
     public Proxy(int port) throws IOException {
-        long startTime = Debug.start();
-        Debug.printEnv();
+        //long startTime = Debug.start();
+        //Debug.printEnv();
         this.server = HttpServer.create(new InetSocketAddress(port), -1);
 
         this.server.createContext("/init", new InitHandler());
@@ -56,7 +56,7 @@ public class Proxy {
         // Default is false; used primarily for establishing boot shared class cache
         checkMultipleInitEnabled();
 
-        Debug.end(startTime);
+        //Debug.end(startTime);
     }
 
     private void checkMultipleInitEnabled() {
@@ -99,7 +99,7 @@ public class Proxy {
 
     private class InitHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
-            long startTime = Debug.start();
+            //long startTime = Debug.start();
 
             if (loader != null && !allowMultipleInits)  {
                 String errorMessage = "Cannot initialize the action more than once.";
@@ -151,14 +151,14 @@ public class Proxy {
                 return;
             }
             finally {
-                Debug.end(startTime);
+                //Debug.end(startTime);
             }
         }
     }
 
     private class RunHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
-            long startTime = Debug.start();
+            //long startTime = Debug.start();
             if (loader == null) {
                 Proxy.writeError(t, "Cannot invoke an uninitialized action.");
                 return;
@@ -211,15 +211,15 @@ public class Proxy {
                 writeLogMarkers();
                 System.setSecurityManager(sm);
                 Thread.currentThread().setContextClassLoader(cl);
-                Debug.end(startTime);
+                //Debug.end(startTime);
             }
         }
     }
 
     public static void main(String args[]) throws Exception {
-        Debug.start();
+        //Debug.start();
         Proxy proxy = new Proxy(8080);
         proxy.start();
-        Debug.end();
+        //Debug.end();
     }
 }

@@ -15,14 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-set -x
+set +x
 
 for f in *; do
     # if the file is a directory
     if [ -d ${f} ]; then
         echo "Compiling Test: ${f}"
         cd $f
-        ls -al *.jar
         echo "Compiling Class..."
         javac -verbose -classpath ../../libs/gson-2.8.5.jar Hello.java
         echo "Creating JAR..."
