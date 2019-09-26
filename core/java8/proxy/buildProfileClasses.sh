@@ -21,6 +21,9 @@ cd profiles/base/tests
 # Clean out previous build artifacts
  ./clean_all.sh
 
+ # List libs copied
+ ls ../libs
+
  # Create new build artifacts (e.g., JAR, ZIP, and their base64 encodings)
  ./build_all.sh
 

@@ -22,6 +22,7 @@ for f in *; do
     if [ -d ${f} ]; then
         echo "Compiling Test: ${f}"
         cd $f
+        ls -al *.jar
         echo "Compiling Class..."
         javac -verbose -classpath ../../libs/gson-2.8.5.jar Hello.java
         echo "Creating JAR..."
@@ -32,6 +33,7 @@ for f in *; do
             Linux*)   B64_WRAP="-w0";;
             Darwin*)  B64_WRAP="";;
         esac
+        #base64 -w0 hello.jar > hello.jar.base64
         base64 $B64_WRAP hello.jar > hello.jar.base64
         cd ..
     fi

@@ -37,8 +37,8 @@ set +x
 JAVA_STANDARD_OPTIONS="-Dfile.encoding=UTF-8"
 # #### Construct Class Cache with HTTP Server classes by starting the server ####
 JAVA_EXTENDED_OPTIONS="-Xshareclasses:cacheDir=/javaSharedCache/ -Xquickstart"
-JAVA_VERBOSE_OPTIONS="-verbose:class -verbose:sizes"
-#JAVA_VERBOSE_OPTIONS=""
+#JAVA_VERBOSE_OPTIONS="-verbose:class -verbose:sizes"
+JAVA_VERBOSE_OPTIONS=""
 JAVA_JVM_KILL_DELAY=5s
 
 export OW_ALLOW_MULTIPLE_INIT=true

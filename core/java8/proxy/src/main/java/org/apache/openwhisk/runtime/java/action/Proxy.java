@@ -44,9 +44,13 @@ public class Proxy {
     private JarLoader loader = null;
     private boolean allowMultipleInits = false;
 
+    private static final boolean DEBUG = false;
+    private long startTime = 0;
+
     public Proxy(int port) throws IOException {
-        //long startTime = Debug.start();
-        //Debug.printEnv();
+
+        if (DEBUG) { Debug.printEnv(); }
+        if (DEBUG) { startTime = Debug.start(); }
         this.server = HttpServer.create(new InetSocketAddress(port), -1);
 
         this.server.createContext("/init", new InitHandler());
@@ -56,20 +60,14 @@ public class Proxy {
         // Default is false; used primarily for establishing boot shared class cache
         checkMultipleInitEnabled();
 
-        //Debug.end(startTime);
+        if (DEBUG) { Debug.end(startTime); }
     }
 
     private void checkMultipleInitEnabled() {
         String strMultipleInit = System.getenv("OW_ALLOW_MULTIPLE_INIT");
-        // System.out.printf("OW_ALLOW_MULTIPLE_INIT=%s\n", strMultipleInit);
-
         // Determine if we allow multiple "init" calls (i.e., Java container reuse); default:false
         if(strMultipleInit!=null)
             this.allowMultipleInits = Boolean.parseBoolean(strMultipleInit);
-
-        // if(this.allowMultipleInits){
-        //     System.out.println("Multiple '/init' allowed.");
-        // }
     }
 
     public void start() {
@@ -99,7 +97,7 @@ public class Proxy {
 
     private class InitHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
-            //long startTime = Debug.start();
+            if (DEBUG) { startTime = Debug.start(); }
 
             if (loader != null && !allowMultipleInits)  {
                 String errorMessage = "Cannot initialize the action more than once.";
@@ -151,14 +149,14 @@ public class Proxy {
                 return;
             }
             finally {
-                //Debug.end(startTime);
+                if (DEBUG) { Debug.end(startTime); }
             }
         }
     }
 
     private class RunHandler implements HttpHandler {
         public void handle(HttpExchange t) throws IOException {
-            //long startTime = Debug.start();
+            if (DEBUG) { startTime = Debug.start(); }
             if (loader == null) {
                 Proxy.writeError(t, "Cannot invoke an uninitialized action.");
                 return;
@@ -211,15 +209,15 @@ public class Proxy {
                 writeLogMarkers();
                 System.setSecurityManager(sm);
                 Thread.currentThread().setContextClassLoader(cl);
-                //Debug.end(startTime);
+                if (DEBUG) { Debug.end(startTime); }
             }
         }
     }
 
     public static void main(String args[]) throws Exception {
-        //Debug.start();
+        if (DEBUG) { Debug.start(); }
         Proxy proxy = new Proxy(8080);
         proxy.start();
-        //Debug.end();
+        if (DEBUG) { Debug.end(); }
     }
 }
