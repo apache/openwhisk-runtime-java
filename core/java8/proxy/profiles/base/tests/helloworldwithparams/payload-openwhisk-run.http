@@ -3,8 +3,8 @@ content-type: application/json
 
 {
   "value": {
-    "name" : "Joe",
-    "place" : "TX"
+    "name" : "Jill",
+    "place" : "OK"
   },
   "namespace": "default",
   "action_name": "java-helloworld-with-params",

@@ -20,9 +20,11 @@ set +x
 for f in *; do
     # if the file is a directory
     if [ -d ${f} ]; then
-        echo "Updating 'code' payload with base64 encoded archive data: ${f}"
         cd $f
+            echo "Executing: $f"
+            echo "/init: @openwhisk-data-init.json"
             curl -d "@openwhisk-data-init.json" -H "Content-Type: application/json" -X POST http://localhost:8080/init
+            echo "/run: @openwhisk-data-run.json"
             curl -d "@openwhisk-data-run.json" -H "Content-Type: application/json" -X POST http://localhost:8080/run
         cd ..
     fi

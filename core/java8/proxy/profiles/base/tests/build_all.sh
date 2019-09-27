@@ -22,19 +22,20 @@ for f in *; do
     if [ -d ${f} ]; then
         echo "Compiling Test: ${f}"
         cd $f
-        ls -al *.jar
-        echo "Compiling Class..."
-        javac -verbose -classpath ../../libs/gson-2.8.5.jar Hello.java
+        # Compile all sources found in directory
+        find . -name "*.java" > sources.txt
+        echo "Compiling Classes..."
+        #javac -verbose -classpath ../../libs/\* Hello.java
+        javac -verbose -classpath ../../libs/\* @sources.txt
         echo "Creating JAR..."
-        jar cvf hello.jar *.class
+        jar cvf cache.jar *.class
         echo "Base64 encoding JAR..."
         unameOut="$(uname -s)"
         case "${unameOut}" in
             Linux*)   B64_WRAP="-w0";;
             Darwin*)  B64_WRAP="";;
         esac
-        #base64 -w0 hello.jar > hello.jar.base64
-        base64 $B64_WRAP hello.jar > hello.jar.base64
+        base64 $B64_WRAP cache.jar > cache.jar.base64
         cd ..
     fi
 done

@@ -21,7 +21,7 @@ public class Hello {
     String name = System.getenv("name");
     String place = System.getenv("place");
     JsonObject response = new JsonObject();
-    response.addProperty("greeting", "Hello " + name + " from " + place + "!");
+    response.addProperty("greeting", "HOWDY " + name + " from " + place + "!");
     return response;
   }
 }

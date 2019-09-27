@@ -22,9 +22,10 @@ for f in *; do
     if [ -d ${f} ]; then
         echo "Cleaning up build artifacts for test: '${f}'"
         cd $f
-        rm Hello.class
-        rm hello.jar
-        rm hello.jar.base64
+        rm *.txt
+        rm *.class
+        rm *.jar
+        rm *.jar.base64
         rm openwhisk-data-init.json
         rm knative-data-init.json
         rm knative-data-init-run.json

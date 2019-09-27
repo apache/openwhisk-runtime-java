@@ -16,16 +16,23 @@
  */
 
 import com.google.gson.JsonObject;
-public class Hello {
+import org.json.JSONObject;
+
+public class OW_Hello_2 {
   public static JsonObject main(JsonObject args) {
     String name = "stranger";
     String place = "somewhere";
+
+    JSONObject someJsonObj = new JSONObject();
+    someJsonObj.put("name", "Jill");
+
     if (args.has("name"))
       name = args.getAsJsonPrimitive("name").getAsString();
     if (args.has("place"))
       place = args.getAsJsonPrimitive("place").getAsString();
     JsonObject response = new JsonObject();
     response.addProperty("greeting", "Hello " + name + " from " + place + "!");
+    response.addProperty("raw",someJsonObj.toString(4));
     return response;
   }
 }

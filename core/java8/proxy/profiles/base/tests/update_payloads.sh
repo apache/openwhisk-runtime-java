@@ -22,12 +22,13 @@ for f in *; do
     if [ -d ${f} ]; then
         echo "Updating 'code' payload with base64 encoded archive data: ${f}"
         cd $f
-            sed "s#BASE64_ENCODED_JAR#$(cat hello.jar.base64)#" openwhisk-data-init.json.tmpl > openwhisk-data-init.json
-            sed "s#BASE64_ENCODED_JAR#$(cat hello.jar.base64)#" knative-data-init.json.tmpl > knative-data-init.json
-            sed "s#BASE64_ENCODED_JAR#$(cat hello.jar.base64)#" knative-data-init-run.json.tmpl > knative-data-init-run.json
-            sed "s#BASE64_ENCODED_JAR#$(cat hello.jar.base64)#" payload-knative-init.http.tmpl > payload-knative-init.http
-            sed "s#BASE64_ENCODED_JAR#$(cat hello.jar.base64)#" payload-knative-init-run.http.tmpl > payload-knative-init-run.http
-            sed "s#BASE64_ENCODED_JAR#$(cat hello.jar.base64)#" payload-openwhisk-init.http.tmpl > payload-openwhisk-init.http
+            ls -al
+            sed "s#BASE64_ENCODED_JAR#$(cat cache.jar.base64)#" openwhisk-data-init.json.tmpl > openwhisk-data-init.json
+            sed "s#BASE64_ENCODED_JAR#$(cat cache.jar.base64)#" knative-data-init.json.tmpl > knative-data-init.json
+            sed "s#BASE64_ENCODED_JAR#$(cat cache.jar.base64)#" knative-data-init-run.json.tmpl > knative-data-init-run.json
+            sed "s#BASE64_ENCODED_JAR#$(cat cache.jar.base64)#" payload-knative-init.http.tmpl > payload-knative-init.http
+            sed "s#BASE64_ENCODED_JAR#$(cat cache.jar.base64)#" payload-knative-init-run.http.tmpl > payload-knative-init-run.http
+            sed "s#BASE64_ENCODED_JAR#$(cat cache.jar.base64)#" payload-openwhisk-init.http.tmpl > payload-openwhisk-init.http
         cd ..
     fi
 done

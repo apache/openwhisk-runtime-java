@@ -60,6 +60,7 @@ def dumpDir(dir) {
 }
 
 task oneJar(type: Jar) {
+    outputs.upToDateWhen { false }
     manifest.from jar.manifest
     classifier = 'all'
     from {
