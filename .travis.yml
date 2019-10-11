@@ -18,6 +18,7 @@
 sudo: required
 group: deprecated-2017Q3
 language: scala
+jdk: openjdk8
 scala:
 - 2.12.7
 services:
