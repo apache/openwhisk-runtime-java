@@ -16,11 +16,9 @@
 #
 
 sudo: required
-group: deprecated-2017Q3
-language: scala
+dist: xenial
+language: java
 jdk: openjdk8
-scala:
-- 2.12.7
 services:
 - docker
 # required to support multi-stage build
