@@ -56,6 +56,7 @@ class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSyst
           |         response.addProperty("api_key", System.getenv("__OW_API_KEY"));
           |         response.addProperty("namespace", System.getenv("__OW_NAMESPACE"));
           |         response.addProperty("action_name", System.getenv("__OW_ACTION_NAME"));
+          |         response.addProperty("action_version", System.getenv("__OW_ACTION_VERSION"));
           |         response.addProperty("activation_id", System.getenv("__OW_ACTIVATION_ID"));
           |         response.addProperty("deadline", System.getenv("__OW_DEADLINE"));
           |         return response;
