@@ -19,6 +19,13 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.14.0
+  - Support for __OW_ACTION_VERSION (openwhisk/4761)
+  - adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
+
+## 1.13.0-incubating
+  - jdk x86_64-ubuntu-jdk8u181-b13_openj9-0.9.0
+
 ## 1.1.4
 Changes:
 - Update jdk adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u212-b04_openj9-0.14.2 [jdk8u181-b13_openj9-0.9.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/tags/)
