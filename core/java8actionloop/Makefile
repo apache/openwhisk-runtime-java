@@ -25,7 +25,7 @@ build:
 
 push: build
 	docker login
-	docker tag $(IMG) $(PREFIX)/$(IMG) 
+	docker tag $(IMG) $(PREFIX)/$(IMG)
 	docker push $(PREFIX)/$(IMG)
 
 clean:
@@ -42,7 +42,7 @@ debug: build
 $(MAIN_JAR):
 	$(MAKE) $< -C ../../example main.jar
 
-## You need to execute make start in another terminal 
+## You need to execute make start in another terminal
 
 test-source:
 	$(INVOKE) init ../../example/Main.java
