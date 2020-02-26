@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-include 'tests'
+package actionContainers
 
-include 'core:java8'
-include 'core:java8:proxy'
-include 'core:java8actionloop'
-include 'core:java11actionloop'
+import common.WskActorSystem
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
-rootProject.name = 'runtime-java'
-
-gradle.ext.openwhisk = [
-        version: '1.0.0-SNAPSHOT'
-]
-
-gradle.ext.scala = [
-    version: '2.12.7',
-    compileFlags: ['-feature', '-unchecked', '-deprecation', '-Xfatal-warnings', '-Ywarn-unused-import']
-]
-
-gradle.ext.scalafmt = [
-    version: '1.5.0',
-    config: new File(rootProject.projectDir, '.scalafmt.conf')
-]
+@RunWith(classOf[JUnitRunner])
+class Java11ActionLoopContainerTests extends JavaActionContainerTests with WskActorSystem {
+  override val errPrefix = "\"Exception in thread \\\"main\\\""
+  override val checkStreamsAtInit = false
+  override val image = "actionloop-java-v11"
+  override val runtimeDetectErrors = false
+}
