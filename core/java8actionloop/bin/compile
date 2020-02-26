@@ -87,7 +87,7 @@ def write_exec(target_dir, classpath, main):
     jars.append(target_dir)
     cmd = """#!/bin/bash
 cd "%s"
-/opt/java/openjdk/bin/java --add-opens java.base/java.util=ALL-UNNAMED --illegal-access=permit -Dfile.encoding=UTF-8 -cp "%s" Launcher "%s" "$@"
+/opt/java/openjdk/bin/java -Dfile.encoding=UTF-8 -cp "%s" Launcher "%s" "$@"
 """ %( target_dir, ":".join(classpath+jars), main)
     with codecs.open(launcher, 'w', 'utf-8') as d:
         d.write(cmd)
