@@ -29,7 +29,7 @@ gradle.ext.openwhisk = [
 ]
 
 gradle.ext.scala = [
-    version: '2.12.7',
+    version: '2.12.10',
     compileFlags: ['-feature', '-unchecked', '-deprecation', '-Xfatal-warnings', '-Ywarn-unused-import']
 ]
 
