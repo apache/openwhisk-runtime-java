@@ -34,10 +34,14 @@ FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
 # select the builder to use
 ARG GO_PROXY_BUILD_FROM=release
 
-RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
-	&& apt-get install -y --no-install-recommends locales python vim \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& locale-gen en_US.UTF-8
+RUN rm -rf /var/lib/apt/lists/* \
+    && apt-get clean \
+    && apt-get update \
+    && apt-get -y --no-install-recommends upgrade \
+    && apt-get -y --no-install-recommends install locales python vim \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && locale-gen en_US.UTF-8
 
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \

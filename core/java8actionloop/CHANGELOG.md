@@ -19,6 +19,9 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.15.0 (next release)
+  - Include latest security fixes with every build.
+
 ## 1.14.0
   - Initial release of actionloop-based Java Action
   - adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1

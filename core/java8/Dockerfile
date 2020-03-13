@@ -18,10 +18,14 @@
 # Use AdoptOpenJDK's JDK8, OpenJ9 Critical Patch Update (CPU) release version 0.15.1
 FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
 
-RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
-	&& apt-get install -y --no-install-recommends locales \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& locale-gen en_US.UTF-8
+RUN rm -rf /var/lib/apt/lists/* \
+    && apt-get clean \
+    && apt-get update \
+    && apt-get -y --no-install-recommends upgrade \
+    && apt-get -y --no-install-recommends install locales \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && locale-gen en_US.UTF-8
 
 ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
