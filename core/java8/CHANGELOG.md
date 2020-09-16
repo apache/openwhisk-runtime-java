@@ -21,6 +21,7 @@
 
 ## 1.15.0 (next release)
   - Include latest security fixes with every build.
+  - adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
 
 ## 1.14.0
   - Support for __OW_ACTION_VERSION (openwhisk/4761)

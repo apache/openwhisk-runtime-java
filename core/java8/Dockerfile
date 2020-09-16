@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-# Use AdoptOpenJDK's JDK8, OpenJ9 Critical Patch Update (CPU) release version 0.15.1
-FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
+# Use AdoptOpenJDK's JDK8, OpenJ9, ubuntu
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
