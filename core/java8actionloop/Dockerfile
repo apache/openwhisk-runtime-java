@@ -28,8 +28,8 @@ RUN curl -sL \
   && cd openwhisk-runtime-go-*/main\
   && GO111MODULE=on go build -o /bin/proxy
 
-# Use AdoptOpen JDK8, OpenJ9 release version 0.15.1
-FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
+# Use AdoptOpenJDK's JDK8, OpenJ9, ubuntu
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
 
 # select the builder to use
 ARG GO_PROXY_BUILD_FROM=release
