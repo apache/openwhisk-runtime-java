@@ -16,12 +16,12 @@
 #
 
 # build go proxy from source
-FROM golang:1.12 AS builder_source
+FROM golang:1.15 AS builder_source
 RUN env CGO_ENABLED=0 go get github.com/apache/openwhisk-runtime-go/main && mv /go/bin/main /bin/proxy
 
 # or build it from a release
-FROM golang:1.12 AS builder_release
-ARG GO_PROXY_RELEASE_VERSION=1.12@1.15.0
+FROM golang:1.15 AS builder_release
+ARG GO_PROXY_RELEASE_VERSION=1.15@1.16.0
 RUN curl -sL \
   https://github.com/apache/openwhisk-runtime-go/archive/{$GO_PROXY_RELEASE_VERSION}.tar.gz\
   | tar xzf -\
