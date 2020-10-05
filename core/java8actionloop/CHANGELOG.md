@@ -21,7 +21,7 @@
 
 ## 1.15.0
   - Include latest security fixes with every build.
-  - Adopt openjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
+  - adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
   - Build proxy using go 1.15 and openwhisk-runtime-go 1.16.0
 
 ## 1.14.0
