@@ -21,14 +21,14 @@
 
 ## 1.15.0
   - Include latest security fixes with every build.
-  - adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
+  - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
 
 ## 1.14.0
   - Support for __OW_ACTION_VERSION (openwhisk/4761)
-  - adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
+  - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u222-b10_openj9-0.15.1
 
 ## 1.13.0-incubating
-  - jdk x86_64-ubuntu-jdk8u181-b13_openj9-0.9.0
+  - Use jdk x86_64-ubuntu-jdk8u181-b13_openj9-0.9.0
 
 ## 1.1.4
 Changes:
