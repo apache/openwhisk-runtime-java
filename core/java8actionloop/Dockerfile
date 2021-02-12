@@ -21,7 +21,7 @@ RUN env CGO_ENABLED=0 go get github.com/apache/openwhisk-runtime-go/main && mv /
 
 # or build it from a release
 FROM golang:1.15 AS builder_release
-ARG GO_PROXY_RELEASE_VERSION=1.15@1.16.0
+ARG GO_PROXY_RELEASE_VERSION=1.15@1.17.0
 RUN curl -sL \
   https://github.com/apache/openwhisk-runtime-go/archive/{$GO_PROXY_RELEASE_VERSION}.tar.gz\
   | tar xzf -\
