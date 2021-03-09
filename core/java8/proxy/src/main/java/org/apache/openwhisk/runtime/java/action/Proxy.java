@@ -169,7 +169,7 @@ public class Proxy {
                 Throwable underlying = ite.getCause();
                 underlying.printStackTrace(System.err);
                 Proxy.writeError(t,
-                        "An error has occured while invoking the action (see logs for details): " + underlying);
+                        "An error has occurred while invoking the action (see logs for details): " + underlying);
             } catch (Exception e) {
                 e.printStackTrace(System.err);
                 Proxy.writeError(t, "An error has occurred (see logs for details): " + e);
