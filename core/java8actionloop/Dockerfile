@@ -34,7 +34,7 @@ RUN curl -sL \
   && GO111MODULE=on go build -o /bin/proxy
 
 # Use AdoptOpenJDK's JDK8, OpenJ9, ubuntu
-FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u282-b08_openj9-0.24.0
 
 # select the builder to use
 ARG GO_PROXY_BUILD_FROM=release
