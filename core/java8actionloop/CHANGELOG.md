@@ -19,6 +19,10 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.16.0
+  - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u282-b08_openj9-0.24.0
+  - Use 1.17.0 release of openwhisk-runtime-go (#117)
+
 ## 1.15.0
   - Include latest security fixes with every build.
   - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u262-b10_openj9-0.21.0
