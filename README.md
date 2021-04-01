@@ -23,6 +23,8 @@
 
 ## Changelogs
 - [Java 8 CHANGELOG.md](core/java8/CHANGELOG.md)
+- [Java 8 ActionLoop CHANGELOG.md](core/java8actionloop/CHANGELOG.md)
+- [Java 11 ActionLoop CHANGELOG.md](core/java11actionloop/CHANGELOG.md)
 
 
 ## Quick Java Action
@@ -103,30 +105,36 @@ wsk action invoke --result helloJava --param name World
 
 1. Start Docker Desktop (i.e., Docker daemon)
 
-2. Build the Docker runtime image locally using Gradle:
+2. Build the Docker runtime image locally using Gradle for the different runtime versions:
 ```
 ./gradlew core:java8:distDocker
+./gradlew core:java8actionloop:distDocker
+./gradlew core:java11actionloop:distDocker
 ```
-This will produce the image `whisk/java8action` and push it to the local Docker Desktop registry with the `latest` tag.
+This will produce the image `whisk/java8action`, `whisk/actionloop-java-v8`, and `whisk/actionloop-java-v11`, and will push it to the local Docker Desktop registry with the `latest` tag.
 
 3. Verify the image was registered:
 ```
 $ docker images whisk/*
-REPOSITORY           TAG     IMAGE ID            CREATED             SIZE
-whisk/java8action    latest  35f90453905a        7 minutes ago       521MB
+REPOSITORY                     TAG        IMAGE ID       CREATED          SIZE
+whisk/java8action              latest     e92776cb3b81   3 hours ago      587MB
+whisk/actionloop-java-v8       latest     aca22c730f31   3 hours ago      426MB
+whisk/actionloop-java-v11      latest     921f4868f087   15 minutes ago   450MB
 ```
 
 ### Build and Push image to a remote Docker registry
 
-Build the Docker runtime image locally using Gradle supplying the image Prefix and Registry domain (default port):
+Build the Docker runtime images locally using Gradle supplying the image Prefix and Registry domain (default port):
 ```
 docker login
 ./gradlew core:java8:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
+./gradlew core:java8actionloop:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
+./gradlew core:java11actionloop:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
 ```
 
 ## Deploying the Java runtime image to OpenWhisk
 
-Deploy OpenWhisk using ansible environment that contains the kind `java:8`
+Deploy OpenWhisk using ansible environment that contains the kind `java:8` and `java:11`
 Assuming you have OpenWhisk already deployed locally and `OPENWHISK_HOME` pointing to root directory of OpenWhisk core repository.
 
 Set `ROOTDIR` to the root directory of this repository.
