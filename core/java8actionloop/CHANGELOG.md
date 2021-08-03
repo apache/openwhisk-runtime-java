@@ -19,6 +19,10 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.17.0
+  - Build actionloop from 1.16@1.18.0 (#125)
+  - Resolve akka versions explicitly. (#124, #123)
+
 ## 1.16.0
   - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u282-b08_openj9-0.24.0
   - Use 1.17.0 release of openwhisk-runtime-go (#117)
