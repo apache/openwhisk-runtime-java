@@ -19,7 +19,7 @@
 
 # Apache OpenWhisk runtimes for java
 
-[![Build Status](https://travis-ci.com/apache/openwhisk-runtime-java.svg?branch=master)](https://travis-ci.com/apache/openwhisk-runtime-java)
+[![Build Status](https://travis-ci.com/apache/openwhisk-runtime-java.svg?branch=master)](https://travis-ci.com/github/apache/openwhisk-runtime-java)
 
 ## Changelogs
 - [Java 8 CHANGELOG.md](core/java8/CHANGELOG.md)
