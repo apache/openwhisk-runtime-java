@@ -30,6 +30,9 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -48,7 +51,20 @@ public class Proxy {
 
         this.server.createContext("/init", new InitHandler());
         this.server.createContext("/run", new RunHandler());
-        this.server.setExecutor(null); // creates a default executor
+
+        if (Boolean.parseBoolean(System.getenv("__OW_ALLOW_CONCURRENT"))) {
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                    10,                  // Core size.
+                    25,              // Max size.
+                    10 * 60,            // Idle timeout.
+                    TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<Runnable>(30)
+            );
+            executor.allowCoreThreadTimeOut(true);
+            this.server.setExecutor(executor);
+        } else {
+            this.server.setExecutor(null); // Default executor.
+        }
     }
 
     public void start() {
