@@ -14,17 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath "cz.alenkacz:gradle-scalafmt:${gradle.scalafmt.version}"
-    }
+plugins {
+    id 'java'
+    id 'idea'
+    id 'eclipse'
+    id 'cz.alenkacz.gradle.scalafmt' version "${scalamftVersion}"
 }
 
 subprojects {
-    apply plugin: 'scalafmt'
-    scalafmt.configFilePath = gradle.scalafmt.config
+    gradle.ext.scalafmt.configFilePath = gradle.ext.scalafmt.config
 }
+allprojects {
+    repositories {
+    mavenLocal()
+    mavenCentral()
+        maven {
+            url 'https://repo.grails.org/artifactory/core/'
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+        }
+    }
+}
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.9'
+}
+
+

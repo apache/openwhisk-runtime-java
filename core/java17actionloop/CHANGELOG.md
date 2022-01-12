@@ -1,3 +1,4 @@
+<!--
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -14,8 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-7.3.3-bin.zip
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
+-->
+
+# Java 17 OpenWhisk Runtime Container
+
+## 1.0.0
+Changes:
+- Initial release

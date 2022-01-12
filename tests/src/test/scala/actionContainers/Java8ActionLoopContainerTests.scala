@@ -18,11 +18,13 @@
 package actionContainers
 
 import common.WskActorSystem
+import org.junit.Ignore
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionLoopContainerTests extends JavaActionContainerTests with WskActorSystem {
+@Ignore
+class Java8ActionLoopContainerTests extends Java8ActionContainerTests with WskActorSystem {
   override val errPrefix = "\"Exception in thread \\\"main\\\""
   override val checkStreamsAtInit = false
   override val image = "actionloop-java-v8"

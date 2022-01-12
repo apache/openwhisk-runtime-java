@@ -95,7 +95,7 @@ def init(args):
             contents = fp.read()
         contents = base64.b64encode(contents)
         binary = True
-    elif artifact is not '':
+    elif artifact != '':
         with(codecs.open(artifact, 'r', 'utf-8')) as fp:
             contents = fp.read()
         binary = False

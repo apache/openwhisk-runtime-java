@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -14,8 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-7.3.3-bin.zip
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
+
+# Useful for local testing.
+# USE WITH CAUTION !!
+
+# Removes all previously built instances.
+docker rm $(docker ps -a -q)
+
+docker build -t javabox .
+
+echo ""
+echo "  ---- RUNNING ---- "
+echo ""
+
+docker run -i -t -p 8080:8080 javabox

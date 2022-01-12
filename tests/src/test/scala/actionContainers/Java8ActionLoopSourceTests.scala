@@ -23,7 +23,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionLoopSourceTests extends BasicActionRunnerTests with WskActorSystem {
+class Java8ActionLoopSourceTests extends BasicActionRunnerTests with WskActorSystem {
 
   val image = "actionloop-java-v8"
 

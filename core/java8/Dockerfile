@@ -38,7 +38,7 @@ ADD proxy /javaAction
 
 RUN cd /javaAction \
 	&& rm -rf .classpath .gitignore .gradle .project .settings Dockerfile build \
-	&& ./gradlew oneJar \
+	&& ./gradlew jar \
 	&& rm -rf /javaAction/src \
 	&& ./compileClassCache.sh
 

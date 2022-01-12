@@ -24,10 +24,12 @@ import spray.json.DefaultJsonProtocol._
 import spray.json._
 import actionContainers.ResourceHelpers.JarBuilder
 import actionContainers.ActionContainer.withContainer
+import org.junit.{Ignore}
 import org.scalatest.Matchers
 
 @RunWith(classOf[JUnitRunner])
-class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSystem with Matchers {
+@Ignore
+class Java8ActionContainerTests extends BasicActionRunnerTests with WskActorSystem with Matchers {
 
   val image = "java8action"
   val errPrefix = "\"An error has occurred (see logs for details):"
