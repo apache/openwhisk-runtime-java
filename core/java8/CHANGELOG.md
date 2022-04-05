@@ -19,6 +19,9 @@
 
 # Java 8 OpenWhisk Runtime Container
 
+## 1.18.0
+  - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u322-b06_openj9-0.30.0
+
 ## 1.17.0
   - Resolve akka versions explicitly. (#124, #123)
 
