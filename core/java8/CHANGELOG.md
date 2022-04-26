@@ -18,6 +18,8 @@
 -->
 
 # Java 8 OpenWhisk Runtime Container
+# 1.19.0
+ - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u332-b09_openj9-0.32.0
 
 ## 1.18.0
   - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u322-b06_openj9-0.30.0
