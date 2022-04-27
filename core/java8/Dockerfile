@@ -16,7 +16,7 @@
 #
 
 # Use AdoptOpenJDK's JDK8, OpenJ9, ubuntu
-FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u322-b06_openj9-0.30.0
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u332-b09_openj9-0.32.0
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
