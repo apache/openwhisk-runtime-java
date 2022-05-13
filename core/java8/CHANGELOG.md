@@ -18,6 +18,9 @@
 -->
 
 # Java 8 OpenWhisk Runtime Container
+# next release
+ - use `ibm-semeru-runtimes:open-8u332-b09-jdk-focal` as baseimage
+
 # 1.19.0
  - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u332-b09_openj9-0.32.0
 
