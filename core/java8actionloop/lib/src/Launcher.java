@@ -68,9 +68,9 @@ class Launcher {
         mainMethod = m;
     }
 
-    private static JsonObject invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
+    private static Object invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
         augmentEnv(env);
-        return (JsonObject) mainMethod.invoke(null, arg);
+        return mainMethod.invoke(null, arg);
     }
 
     private static SecurityManager defaultSecurityManager = null;
@@ -142,7 +142,7 @@ class Launcher {
                     }
                     augmentEnv(env);
                 }
-                JsonElement response = invokeMain(payload, env);
+                Object response = invokeMain(payload, env);
                 out.println(response.toString());
             } catch(NullPointerException npe) {
                 System.out.println("the action returned null");
