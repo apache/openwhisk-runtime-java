@@ -32,6 +32,8 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class JarLoader extends URLClassLoader {
@@ -65,15 +67,15 @@ public class JarLoader extends URLClassLoader {
         Method m = mainClass.getMethod(entrypointMethodName, new Class[] { JsonObject.class });
         m.setAccessible(true);
         int modifiers = m.getModifiers();
-        if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
+        if ((m.getReturnType() != JsonObject.class && m.getReturnType() != JsonArray.class) || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
             throw new NoSuchMethodException("main");
         }
         this.mainMethod = m;
     }
 
-    public JsonObject invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
+    public Object invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
         augmentEnv(env);
-        return (JsonObject) mainMethod.invoke(null, arg);
+        return mainMethod.invoke(null, arg);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

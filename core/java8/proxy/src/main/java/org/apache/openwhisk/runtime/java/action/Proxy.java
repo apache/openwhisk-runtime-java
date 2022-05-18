@@ -153,8 +153,8 @@ public class Proxy {
                 Thread.currentThread().setContextClassLoader(loader);
                 System.setSecurityManager(new WhiskSecurityManager());
 
-                // User code starts running here.
-                JsonObject output = loader.invokeMain(inputObject, env);
+                // User code starts running here. the return object supports JsonObject and JsonArray both.
+                Object output = loader.invokeMain(inputObject, env);
                 // User code finished running here.
 
                 if (output == null) {

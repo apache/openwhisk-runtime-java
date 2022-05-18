@@ -62,7 +62,7 @@ class Launcher {
         Method m = mainClass.getMethod(mainMethodName, new Class[] { JsonObject.class });
         m.setAccessible(true);
         int modifiers = m.getModifiers();
-        if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
+        if ((m.getReturnType() != JsonObject.class && m.getReturnType() != JsonArray.class) || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
             throw new NoSuchMethodException(mainMethodName);
         }
         mainMethod = m;
