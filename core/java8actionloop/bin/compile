@@ -106,7 +106,7 @@ def assemble(argv):
     logging.info("%s %s", mainClass, mainMethod)
     source_dir = os.path.abspath(argv[2])
     target_dir = os.path.abspath(argv[3])
-    classpath = ["/usr/java/lib/launcher.jar", "/usr/java/lib/gson-2.8.5.jar"]
+    classpath = ["/usr/java/lib/launcher.jar", "/usr/java/lib/gson-2.9.0.jar"]
 
     # build   
     if build(source_dir, classpath, target_dir, mainClass):

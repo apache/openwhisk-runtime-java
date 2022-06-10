@@ -64,10 +64,10 @@ COPY --from=builder_source /bin/proxy /bin/proxy_source
 COPY --from=builder_release /bin/proxy /bin/proxy_release
 RUN mv /bin/proxy_${GO_PROXY_BUILD_FROM} /bin/proxy
 
-ADD https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.8.5/gson-2.8.5.jar /usr/java/lib/gson-2.8.5.jar
+ADD https://search.maven.org/remotecontent?filepath=com/google/code/gson/gson/2.9.0/gson-2.9.0.jar /usr/java/lib/gson-2.9.0.jar
 ADD lib/src/Launcher.java /usr/java/src/Launcher.java
 RUN cd /usr/java/src ;\
-    javac -cp /usr/java/lib/gson-2.8.5.jar Launcher.java ;\
+    javac -cp /usr/java/lib/gson-2.9.0.jar Launcher.java ;\
     jar cvf /usr/java/lib/launcher.jar *.class
 ADD bin/compile /bin/compile
 ENV OW_COMPILER=/bin/compile
