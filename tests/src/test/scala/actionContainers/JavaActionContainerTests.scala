@@ -299,6 +299,39 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
     })
   }
 
+  it should "support array result" in {
+    val (out, err) = withActionContainer() { c =>
+      val jar = JarBuilder.mkBase64Jar(
+        Seq("", "HelloArrayWhisk.java") ->
+          """
+            | import com.google.gson.JsonArray;
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloArrayWhisk {
+            |     public static JsonArray main(JsonObject args) throws Exception {
+            |         JsonArray jsonArray = new JsonArray();
+            |         jsonArray.add("a");
+            |         jsonArray.add("b");
+            |         return jsonArray;
+            |     }
+            | }
+          """.stripMargin.trim)
+
+      val (initCode, _) = c.init(initPayload(jar, "HelloArrayWhisk"))
+      initCode should be(200)
+
+      val (runCode, runRes) = c.runForJsArray(JsObject())
+      runCode should be(200)
+      runRes.get.elements shouldBe Vector(JsString("a"), JsString("b"))
+    }
+
+    checkStreams(out, err, {
+      case (o, e) =>
+        o shouldBe empty
+        e shouldBe empty
+    })
+  }
+
   it should "survive System.exit" in {
     val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
