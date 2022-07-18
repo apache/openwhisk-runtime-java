@@ -157,9 +157,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
 
         val expected = m match {
           case c if c == "x" || c == "!" => s"$errPrefix java.lang.ClassNotFoundException: example.HelloWhisk$c"
-          case "#bogus" =>
-            s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.bogus(com.google.gson.JsonObject)"
-          case _ => s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.main(com.google.gson.JsonObject)"
+          case _                         => s"$errPrefix java.lang.NoSuchMethodException"
         }
 
         val error = out.get.fields.get("error").get.toString()

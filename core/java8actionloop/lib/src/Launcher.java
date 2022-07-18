@@ -59,6 +59,17 @@ class Launcher {
         }
 
         mainClass = Class.forName(mainClassName);
+        Method[] methods = mainClass.getDeclaredMethods();
+        Boolean existMain = false;
+        for(Method method: methods) {
+            if (method.getName().equals(mainMethodName)) {
+                existMain = true;
+                break;
+            }
+        }
+        if (!existMain) {
+            throw new NoSuchMethodException(mainMethodName);
+        }
     }
 
     private static Object invokeMain(JsonElement arg, Map<String, String> env) throws Exception {
