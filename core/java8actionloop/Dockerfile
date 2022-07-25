@@ -16,7 +16,7 @@
 #
 
 # build go proxy from source
-FROM golang:1.17 AS builder_source
+FROM golang:1.18 AS builder_source
 ARG GO_PROXY_GITHUB_USER=ningyougang
 ARG GO_PROXY_GITHUB_BRANCH=support-array-result-include-sequence-action
 RUN git clone --branch ${GO_PROXY_GITHUB_BRANCH} \
