@@ -322,7 +322,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
 
       val (runCode, runRes) = c.runForJsArray(JsObject())
       runCode should be(200)
-      runRes.get.elements shouldBe Vector(JsString("a"), JsString("b"))
+      runRes shouldBe Some(JsArray(JsString("a"), JsString("b")))
     }
 
     checkStreams(out, err, {
