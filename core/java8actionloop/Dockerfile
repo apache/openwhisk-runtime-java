@@ -16,9 +16,9 @@
 #
 
 # build go proxy from source
-FROM golang:1.16 AS builder_source
-ARG GO_PROXY_GITHUB_USER=apache
-ARG GO_PROXY_GITHUB_BRANCH=master
+FROM golang:1.17 AS builder_source
+ARG GO_PROXY_GITHUB_USER=ningyougang
+ARG GO_PROXY_GITHUB_BRANCH=support-array-result-include-sequence-action
 RUN git clone --branch ${GO_PROXY_GITHUB_BRANCH} \
    https://github.com/${GO_PROXY_GITHUB_USER}/openwhisk-runtime-go /src ;\
    cd /src ; env GO111MODULE=on CGO_ENABLED=0 go build main/proxy.go && \
@@ -31,13 +31,13 @@ RUN curl -sL \
   https://github.com/apache/openwhisk-runtime-go/archive/{$GO_PROXY_RELEASE_VERSION}.tar.gz\
   | tar xzf -\
   && cd openwhisk-runtime-go-*/main\
-  && GO111MODULE=on go build -o /bin/proxy
+  && GO111MODULE=on CGO_ENABLED=0 go build -o /bin/proxy
 
 # Use AdoptOpenJDK's JDK8, OpenJ9, ubuntu
 FROM ibm-semeru-runtimes:open-8u332-b09-jdk-focal
 
 # select the builder to use
-ARG GO_PROXY_BUILD_FROM=release
+ARG GO_PROXY_BUILD_FROM=source
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
