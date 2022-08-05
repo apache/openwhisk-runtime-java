@@ -299,7 +299,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
     })
   }
 
-  it should "support array result" in {
+  it should "support return array result" in {
     val (out, err) = withActionContainer() { c =>
       val jar = JarBuilder.mkBase64Jar(
         Seq("", "HelloArrayWhisk.java") ->
@@ -324,12 +324,29 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       runCode should be(200)
       runRes shouldBe Some(JsArray(JsString("a"), JsString("b")))
     }
+  }
 
-    checkStreams(out, err, {
-      case (o, e) =>
-        o shouldBe empty
-        e shouldBe empty
-    })
+  it should "support array as input param" in {
+    val (out, err) = withActionContainer() { c =>
+      val jar = JarBuilder.mkBase64Jar(
+        Seq("", "HelloArrayWhisk.java") ->
+          """
+            | import com.google.gson.JsonArray;
+            |
+            | public class HelloArrayWhisk {
+            |     public static JsonArray main(JsonArray args) throws Exception {
+            |         return args;
+            |     }
+            | }
+          """.stripMargin.trim)
+
+      val (initCode, _) = c.init(initPayload(jar, "HelloArrayWhisk"))
+      initCode should be(200)
+
+      val (runCode, runRes) = c.runForJsArray(runPayload(JsArray(JsString("a"), JsString("b"))))
+      runCode should be(200)
+      runRes shouldBe Some(JsArray(JsString("a"), JsString("b")))
+    }
   }
 
   it should "survive System.exit" in {
