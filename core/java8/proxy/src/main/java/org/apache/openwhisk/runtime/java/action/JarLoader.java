@@ -37,8 +37,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class JarLoader extends URLClassLoader {
-    private final Class<?> mainClass;
-    private final Method mainMethod;
+    public final Class<?> mainClass;
+    public final String entrypointMethodName;
 
     public static Path saveBase64EncodedFile(InputStream encoded) throws Exception {
         Base64.Decoder decoder = Base64.getDecoder();
@@ -55,31 +55,18 @@ public class JarLoader extends URLClassLoader {
     }
 
     public JarLoader(Path jarPath, String entrypoint)
-            throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, SecurityException {
+            throws MalformedURLException, ClassNotFoundException, SecurityException {
         super(new URL[] { jarPath.toUri().toURL() });
 
         final String[] splittedEntrypoint = entrypoint.split("#");
         final String entrypointClassName = splittedEntrypoint[0];
-        final String entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
 
+        this.entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
         this.mainClass = loadClass(entrypointClassName);
-
-        Method m = mainClass.getMethod(entrypointMethodName, new Class[] { JsonObject.class });
-        m.setAccessible(true);
-        int modifiers = m.getModifiers();
-        if ((m.getReturnType() != JsonObject.class && m.getReturnType() != JsonArray.class) || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
-            throw new NoSuchMethodException("main");
-        }
-        this.mainMethod = m;
-    }
-
-    public Object invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
-        augmentEnv(env);
-        return mainMethod.invoke(null, arg);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void augmentEnv(Map<String, String> newEnv) {
+    public static void augmentEnv(Map<String, String> newEnv) {
         try {
             for (Class cl : Collections.class.getDeclaredClasses()) {
                 if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
