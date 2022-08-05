@@ -320,7 +320,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
       val (initCode, _) = c.init(initPayload(jar, "HelloArrayWhisk"))
       initCode should be(200)
 
-      val (runCode, runRes) = c.runForJsArray(JsObject())
+      val (runCode, runRes) = c.runForJsArray(runPayload(JsObject()))
       runCode should be(200)
       runRes shouldBe Some(JsArray(JsString("a"), JsString("b")))
     }

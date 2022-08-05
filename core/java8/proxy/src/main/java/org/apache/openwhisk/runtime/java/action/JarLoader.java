@@ -55,14 +55,25 @@ public class JarLoader extends URLClassLoader {
     }
 
     public JarLoader(Path jarPath, String entrypoint)
-            throws MalformedURLException, ClassNotFoundException, SecurityException {
+            throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, SecurityException {
         super(new URL[] { jarPath.toUri().toURL() });
 
         final String[] splittedEntrypoint = entrypoint.split("#");
         final String entrypointClassName = splittedEntrypoint[0];
 
-        this.entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
         this.mainClass = loadClass(entrypointClassName);
+        this.entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
+        Method[] methods = mainClass.getDeclaredMethods();
+        Boolean existMain = false;
+        for(Method method: methods) {
+            if (method.getName().equals(this.entrypointMethodName)) {
+                existMain = true;
+                break;
+            }
+        }
+        if (!existMain) {
+            throw new NoSuchMethodException(this.entrypointMethodName);
+        }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
