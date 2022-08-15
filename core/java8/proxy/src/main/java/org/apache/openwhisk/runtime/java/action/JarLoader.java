@@ -32,11 +32,13 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class JarLoader extends URLClassLoader {
-    private final Class<?> mainClass;
-    private final Method mainMethod;
+    public final Class<?> mainClass;
+    public final String entrypointMethodName;
 
     public static Path saveBase64EncodedFile(InputStream encoded) throws Exception {
         Base64.Decoder decoder = Base64.getDecoder();
@@ -58,26 +60,24 @@ public class JarLoader extends URLClassLoader {
 
         final String[] splittedEntrypoint = entrypoint.split("#");
         final String entrypointClassName = splittedEntrypoint[0];
-        final String entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
 
         this.mainClass = loadClass(entrypointClassName);
-
-        Method m = mainClass.getMethod(entrypointMethodName, new Class[] { JsonObject.class });
-        m.setAccessible(true);
-        int modifiers = m.getModifiers();
-        if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
-            throw new NoSuchMethodException("main");
+        this.entrypointMethodName = splittedEntrypoint.length > 1 ? splittedEntrypoint[1] : "main";
+        Method[] methods = mainClass.getDeclaredMethods();
+        Boolean existMain = false;
+        for(Method method: methods) {
+            if (method.getName().equals(this.entrypointMethodName)) {
+                existMain = true;
+                break;
+            }
         }
-        this.mainMethod = m;
-    }
-
-    public JsonObject invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
-        augmentEnv(env);
-        return (JsonObject) mainMethod.invoke(null, arg);
+        if (!existMain) {
+            throw new NoSuchMethodException(this.entrypointMethodName);
+        }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static void augmentEnv(Map<String, String> newEnv) {
+    public static void augmentEnv(Map<String, String> newEnv) {
         try {
             for (Class cl : Collections.class.getDeclaredClasses()) {
                 if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {

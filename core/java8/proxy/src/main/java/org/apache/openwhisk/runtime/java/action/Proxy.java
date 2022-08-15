@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -139,7 +142,17 @@ public class Proxy {
                 InputStream is = t.getRequestBody();
                 JsonParser parser = new JsonParser();
                 JsonObject body = parser.parse(new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))).getAsJsonObject();
-                JsonObject inputObject = body.getAsJsonObject("value");
+                JsonParser json = new JsonParser();
+                JsonObject payloadForJsonObject = json.parse("{}").getAsJsonObject();
+                JsonArray payloadForJsonArray = json.parse("[]").getAsJsonArray();
+                Boolean isJsonObjectParam = true;
+                JsonElement inputJsonElement = body.get("value");
+                if (inputJsonElement.isJsonObject()) {
+                    payloadForJsonObject = inputJsonElement.getAsJsonObject();
+                } else {
+                    payloadForJsonArray = inputJsonElement.getAsJsonArray();
+                    isJsonObjectParam = false;
+                }
 
                 HashMap<String, String> env = new HashMap<String, String>();
                 Set<Map.Entry<String, JsonElement>> entrySet = body.entrySet();
@@ -153,8 +166,28 @@ public class Proxy {
                 Thread.currentThread().setContextClassLoader(loader);
                 System.setSecurityManager(new WhiskSecurityManager());
 
-                // User code starts running here.
-                JsonObject output = loader.invokeMain(inputObject, env);
+                Method mainMethod = null;
+                String mainMethodName = loader.entrypointMethodName;
+                if (isJsonObjectParam) {
+                    mainMethod = loader.mainClass.getMethod(mainMethodName, new Class[] { JsonObject.class });
+                } else {
+                    mainMethod = loader.mainClass.getMethod(mainMethodName, new Class[] { JsonArray.class });
+                }
+                mainMethod.setAccessible(true);
+                int modifiers = mainMethod.getModifiers();
+                if ((mainMethod.getReturnType() != JsonObject.class && mainMethod.getReturnType() != JsonArray.class) || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
+                    throw new NoSuchMethodException(mainMethodName);
+                }
+
+                // User code starts running here. the return object supports JsonObject and JsonArray both.
+                Object output;
+                if (isJsonObjectParam) {
+                    loader.augmentEnv(env);
+                    output = mainMethod.invoke(null, payloadForJsonObject);
+                } else {
+                    loader.augmentEnv(env);
+                    output = mainMethod.invoke(null, payloadForJsonArray);
+                }
                 // User code finished running here.
 
                 if (output == null) {

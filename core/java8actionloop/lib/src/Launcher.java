@@ -59,18 +59,22 @@ class Launcher {
         }
 
         mainClass = Class.forName(mainClassName);
-        Method m = mainClass.getMethod(mainMethodName, new Class[] { JsonObject.class });
-        m.setAccessible(true);
-        int modifiers = m.getModifiers();
-        if (m.getReturnType() != JsonObject.class || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
+        Method[] methods = mainClass.getDeclaredMethods();
+        Boolean existMain = false;
+        for(Method method: methods) {
+            if (method.getName().equals(mainMethodName)) {
+                existMain = true;
+                break;
+            }
+        }
+        if (!existMain) {
             throw new NoSuchMethodException(mainMethodName);
         }
-        mainMethod = m;
     }
 
-    private static JsonObject invokeMain(JsonObject arg, Map<String, String> env) throws Exception {
+    private static Object invokeMain(JsonElement arg, Map<String, String> env) throws Exception {
         augmentEnv(env);
-        return (JsonObject) mainMethod.invoke(null, arg);
+        return mainMethod.invoke(null, arg);
     }
 
     private static SecurityManager defaultSecurityManager = null;
@@ -119,7 +123,9 @@ class Launcher {
                 new OutputStreamWriter(
                         new FileOutputStream("/dev/fd/3"), "UTF-8"));
         JsonParser json = new JsonParser();
-        JsonObject empty = json.parse("{}").getAsJsonObject();
+        JsonObject emptyForJsonObject = json.parse("{}").getAsJsonObject();
+        JsonArray emptyForJsonArray = json.parse("[]").getAsJsonArray();
+        Boolean isJsonObjectParam = true;
         String input = "";
         while (true) {
             try {
@@ -127,14 +133,19 @@ class Launcher {
                 if (input == null)
                     break;
                 JsonElement element = json.parse(input);
-                JsonObject payload = empty.deepCopy();
+                JsonObject payloadForJsonObject = emptyForJsonObject.deepCopy();
+                JsonArray payloadForJsonArray = emptyForJsonArray.deepCopy();
                 HashMap<String, String> env = new HashMap<String, String>();
                 if (element.isJsonObject()) {
                     // collect payload and environment
                     for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
                         if (entry.getKey().equals("value")) {
                             if (entry.getValue().isJsonObject())
-                                payload = entry.getValue().getAsJsonObject();
+                                payloadForJsonObject = entry.getValue().getAsJsonObject();
+                            else {
+                                payloadForJsonArray = entry.getValue().getAsJsonArray();
+                                isJsonObjectParam = false;
+                            }
                         } else {
                             env.put(String.format("__OW_%s", entry.getKey().toUpperCase()),
                                     entry.getValue().getAsString());
@@ -142,7 +153,26 @@ class Launcher {
                     }
                     augmentEnv(env);
                 }
-                JsonElement response = invokeMain(payload, env);
+
+                Method m = null;
+                if (isJsonObjectParam) {
+                    m = mainClass.getMethod(mainMethodName, new Class[] { JsonObject.class });
+                } else {
+                    m = mainClass.getMethod(mainMethodName, new Class[] { JsonArray.class });
+                }
+                m.setAccessible(true);
+                int modifiers = m.getModifiers();
+                if ((m.getReturnType() != JsonObject.class && m.getReturnType() != JsonArray.class) || !Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) {
+                    throw new NoSuchMethodException(mainMethodName);
+                }
+                mainMethod = m;
+
+                Object response;
+                if (isJsonObjectParam) {
+                    response = invokeMain(payloadForJsonObject, env);
+                } else {
+                    response = invokeMain(payloadForJsonArray, env);
+                }
                 out.println(response.toString());
             } catch(NullPointerException npe) {
                 System.out.println("the action returned null");

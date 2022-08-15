@@ -68,6 +68,36 @@ If needed you can also customize the method name of your Java action. This
 can be done by specifying the Java fully-qualified method name of your action,
 e.q., `--main com.example.MyMain#methodName`
 
+Not only support return JsonObject but also support return JsonArray, the main function would be:
+
+```java
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+public class HelloArray {
+    public static JsonArray main(JsonObject args) {
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add("a");
+        jsonArray.add("b");
+        return jsonArray;
+    }
+}
+```
+
+And support array result for sequence action as well, the first action's array result can be used as next action's input parameter.
+
+So the function would be:
+
+```java
+import com.google.gson.JsonArray;
+
+public class Sort {
+    public static JsonArray main(JsonArray args) {
+        return args;
+    }
+}
+```
+
 ### Create the Java Action
 To use as a docker action:
 ```

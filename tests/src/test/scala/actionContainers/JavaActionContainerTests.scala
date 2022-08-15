@@ -157,9 +157,7 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
 
         val expected = m match {
           case c if c == "x" || c == "!" => s"$errPrefix java.lang.ClassNotFoundException: example.HelloWhisk$c"
-          case "#bogus" =>
-            s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.bogus(com.google.gson.JsonObject)"
-          case _ => s"$errPrefix java.lang.NoSuchMethodException: example.HelloWhisk.main(com.google.gson.JsonObject)"
+          case _                         => s"$errPrefix java.lang.NoSuchMethodException"
         }
 
         val error = out.get.fields.get("error").get.toString()
@@ -299,6 +297,56 @@ class JavaActionContainerTests extends BasicActionRunnerTests with WskActorSyste
         o shouldBe empty
         e shouldBe empty
     })
+  }
+
+  it should "support return array result" in {
+    val (out, err) = withActionContainer() { c =>
+      val jar = JarBuilder.mkBase64Jar(
+        Seq("", "HelloArrayWhisk.java") ->
+          """
+            | import com.google.gson.JsonArray;
+            | import com.google.gson.JsonObject;
+            |
+            | public class HelloArrayWhisk {
+            |     public static JsonArray main(JsonObject args) throws Exception {
+            |         JsonArray jsonArray = new JsonArray();
+            |         jsonArray.add("a");
+            |         jsonArray.add("b");
+            |         return jsonArray;
+            |     }
+            | }
+          """.stripMargin.trim)
+
+      val (initCode, _) = c.init(initPayload(jar, "HelloArrayWhisk"))
+      initCode should be(200)
+
+      val (runCode, runRes) = c.runForJsArray(runPayload(JsObject()))
+      runCode should be(200)
+      runRes shouldBe Some(JsArray(JsString("a"), JsString("b")))
+    }
+  }
+
+  it should "support array as input param" in {
+    val (out, err) = withActionContainer() { c =>
+      val jar = JarBuilder.mkBase64Jar(
+        Seq("", "HelloArrayWhisk.java") ->
+          """
+            | import com.google.gson.JsonArray;
+            |
+            | public class HelloArrayWhisk {
+            |     public static JsonArray main(JsonArray args) throws Exception {
+            |         return args;
+            |     }
+            | }
+          """.stripMargin.trim)
+
+      val (initCode, _) = c.init(initPayload(jar, "HelloArrayWhisk"))
+      initCode should be(200)
+
+      val (runCode, runRes) = c.runForJsArray(runPayload(JsArray(JsString("a"), JsString("b"))))
+      runCode should be(200)
+      runRes shouldBe Some(JsArray(JsString("a"), JsString("b")))
+    }
   }
 
   it should "survive System.exit" in {
