@@ -19,7 +19,8 @@
 
 # Apache OpenWhisk runtimes for java
 
-[![Build Status](https://travis-ci.com/apache/openwhisk-runtime-java.svg?branch=master)](https://travis-ci.com/github/apache/openwhisk-runtime-java)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Continuous Integration](https://github.com/apache/openwhisk-runtime-java/actions/workflows/ci.yaml/badge.svg)](https://github.com/apache/openwhisk-runtime-java/actions/workflows/ci.yaml)
 
 ## Changelogs
 - [Java 8 CHANGELOG.md](core/java8/CHANGELOG.md)
