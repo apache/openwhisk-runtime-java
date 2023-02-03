@@ -77,7 +77,6 @@ jobs:
 
       # Conditionally publish runtime images to DockerHub
       # Important: naming convention for release tags is runtime@version
-      #   For this repository: 8@X.Y.Z or 8actionloop@X.Y.Z
       - name: Docker Login
         if: ${{ env.PUSH_NIGHTLY  == 'true' || env.PUSH_RELEASE == 'true' }}
         uses: docker/login-action@v2
@@ -99,4 +98,9 @@ jobs:
         run: |
           RUNTIME_VERSION=${GITHUB_REF_NAME%@*}
           IMAGE_TAG=${GITHUB_REF_NAME##*@}
-          ./gradlew :core:java${RUNTIME_VERSION}Action:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$IMAGE_TAG
+          if [ ${RUNTIME_VERSION} == "8" ]; then
+            RUNTIME="java8"
+          elif [ ${RUNTIME_VERSION} == "8a" ]; then
+            RUNTIME="java8actionloop"
+          fi
+          ./gradlew :core:${RUNTIME}Action:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$IMAGE_TAG
