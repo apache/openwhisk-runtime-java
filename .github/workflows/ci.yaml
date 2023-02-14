@@ -103,4 +103,4 @@ jobs:
           elif [ ${RUNTIME_VERSION} == "8a" ]; then
             RUNTIME="java8actionloop"
           fi
-          ./gradlew :core:${RUNTIME}Action:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$IMAGE_TAG
+          ./gradlew :core:${RUNTIME}:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$IMAGE_TAG
