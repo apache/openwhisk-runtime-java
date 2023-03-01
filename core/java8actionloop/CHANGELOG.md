@@ -19,7 +19,7 @@
 
 # Java 8 OpenWhisk Runtime Container
 # next release
- - use `ibm-semeru-runtimes:open-8u352-b08-jdk-focal` as baseimage
+ - use `ibm-semeru-runtimes:open-8u362-b09-jdk-focal` as baseimage
  - update gson version to 2.9.0
  - update Proxy to 1.20 and release 1.21.0
 # 1.19.0
