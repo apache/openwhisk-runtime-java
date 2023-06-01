@@ -18,6 +18,9 @@
 -->
 
 # Java 8 OpenWhisk Runtime Container
+# next release
+ - use `ibm-semeru-runtimes:open-8u372-b07-jdk-focal` as baseimage
+
 # 1.18.0
   - Use `ibm-semeru-runtimes:open-8u362-b09-jdk-focal` as baseimage (#151)
   - Support array result include sequence action (#140)

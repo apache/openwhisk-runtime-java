@@ -16,7 +16,7 @@
 #
 
 # Use AdoptOpenJDK's JDK8, OpenJ9, ubuntu
-FROM ibm-semeru-runtimes:open-8u362-b09-jdk-focal
+FROM ibm-semeru-runtimes:open-8u372-b07-jdk-focal
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get clean \
