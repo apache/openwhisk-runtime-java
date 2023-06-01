@@ -18,13 +18,6 @@
 -->
 
 # Java 8 OpenWhisk Runtime Container
-<<<<<<< HEAD
-# 1.18.0
-  - Use `ibm-semeru-runtimes:open-8u362-b09-jdk-focal` as baseimage (#151)
-  - Support array result include sequence action (#140)
-  - update gson version to 2.9.0 (#139)
-  - update Proxy to 1.20 and release 1.22.0
-=======
 # next release
  - use `ibm-semeru-runtimes:open-8u372-b07-jdk-focal` as baseimage
  - update gson version to 2.9.0
@@ -34,7 +27,6 @@
 
 ## 1.18.0
   - Use adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u322-b06_openj9-0.30.0
->>>>>>> c12949c (update java base image open-8u372-b07-jdk-focal for vuln fixes)
 
 ## 1.17.0
   - Build actionloop from 1.16@1.18.0 (#125)
