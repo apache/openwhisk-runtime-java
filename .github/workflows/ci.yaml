@@ -92,6 +92,8 @@ jobs:
           ./gradlew :core:java8:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$SHORT_COMMIT
           ./gradlew :core:java8actionloop:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=nightly
           ./gradlew :core:java8actionloop:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$SHORT_COMMIT
+          ./gradlew :core:java17actionloop:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=nightly
+          ./gradlew :core:java17actionloop:distDocker -PdockerRegistry=docker.io -PdockerImagePrefix=openwhisk -PdockerImageTag=$SHORT_COMMIT
       - name: Push Release Images
         if: ${{ env.PUSH_RELEASE == 'true' }}
         working-directory: runtime
