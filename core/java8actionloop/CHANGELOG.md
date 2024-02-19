@@ -20,7 +20,7 @@
 # Java 8 OpenWhisk Runtime Container
 
 # next Release
-- use `ibm-semeru-runtimes:open-8u392-b08-jdk-focal` as baseimage
+- use `ibm-semeru-runtimes:open-8u402-b06-jdk-focal` as baseimage
 
 # 1.19.0
  - use `ibm-semeru-runtimes:open-8u382-b05-jdk-focal` as baseimage
