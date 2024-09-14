@@ -19,8 +19,11 @@
 
 # Java 8 OpenWhisk Runtime Container
 
-# next Release
-- use `ibm-semeru-runtimes:open-8u422-b05-jdk-focal` as baseimage
+# 1.20.0
+ - Use `ibm-semeru-runtimes:open-8u422-b05-jdk-focal` as baseimage (#164)
+ - Update gradle-scalafmt to 1.5.1 to fix build. (#165)
+ - Update go proxy to 1.23@1.25.0 (#166)
+ - Upgrade gradle to 6.9.3 (#167)
 
 # 1.19.0
  - use `ibm-semeru-runtimes:open-8u382-b05-jdk-focal` as baseimage
